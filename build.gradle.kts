@@ -59,6 +59,9 @@ allprojects {
 
         // 工具相关
         implementation("org.projectlombok:lombok")
+        allOpen {
+            annotations("jakarta.persistence.Entity")
+        }
 
         // AOP
         implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -81,6 +84,12 @@ allprojects {
     }
 }
 subprojects {
+    tasks.bootJar {
+        enabled = false
+    }
+}
+tasks.bootJar {
+    enabled = false
 }
 
 tasks.test {

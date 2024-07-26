@@ -10,18 +10,28 @@ export default function Plopfile(plop) {
                         'lepton-module-framework/src/main/kotlin/com/leuan/lepton',
                         'lepton-module-customer/src/main/kotlin/com/leuan/lepton/customer'
                     ]
+                },
+                {
+                    type: 'input',
+                    name: 'biz',
+                    message: '请输入业务名称(例如:user)'
+                },
+                {
+                    type: 'input',
+                    name: 'comment',
+                    message: '请输入业务注释'
                 }
-
             ],
-            data: {
-                package: 'com.leuan.lepton',
-            },
             actions: [{
                 type: 'addMany',
                 base: '_templates/service',
-                destination: '{{module}}/{{name}}',
+                destination: '{{module}}',
                 force: true,
-                templateFiles: '_templates/service'
+                templateFiles: '_templates/service',
+                data: {
+                    package: 'com.leuan.lepton',
+                }
+
             }]
         }
     )
