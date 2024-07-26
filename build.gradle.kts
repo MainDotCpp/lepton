@@ -59,6 +59,7 @@ allprojects {
 
         // 工具相关
         implementation("org.projectlombok:lombok")
+        implementation("cn.hutool:hutool-all:5.8.29")
         allOpen {
             annotations("jakarta.persistence.Entity")
         }

@@ -400,3 +400,79 @@ Error starting ApplicationContext. To display the condition evaluation report re
 2024-07-26 23:12:36.997 [http-nio-5555-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
 2024-07-26 23:12:37.161 [http-nio-5555-exec-1] INFO  org.springdoc.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 141 ms
 2024-07-26 23:13:42.483 [http-nio-5555-exec-4] INFO  com.leuan.lepton.user.service.UserService - 保存系统用户成功|{"id":1,"createdBy":0,"createdAt":1722006822392,"updatedAt":1722006822392,"updatedBy":0,"tenantId":0,"name":"杨洋","phone":"17600302203","password":"123","tenants":[]}
+2024-07-26 23:26:18.463 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-26 23:26:18.468 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2024-07-26 23:26:18.471 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2024-07-26 23:26:19.778 [main] INFO  com.leuan.lepton.LeptonApplicationKt - Starting LeptonApplicationKt using Java 17.0.10 with PID 9531 (/Users/yangyang/Projects/lepton/lepton-application/build/classes/kotlin/main started by yangyang in /Users/yangyang/Projects/lepton)
+2024-07-26 23:26:19.779 [main] INFO  com.leuan.lepton.LeptonApplicationKt - The following 1 profile is active: "dev"
+2024-07-26 23:26:20.229 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-26 23:26:20.256 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 23 ms. Found 3 JPA repository interfaces.
+2024-07-26 23:26:20.446 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 5555 (http)
+2024-07-26 23:26:20.451 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-5555"]
+2024-07-26 23:26:20.452 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-07-26 23:26:20.452 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2024-07-26 23:26:20.475 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-07-26 23:26:20.476 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 680 ms
+2024-07-26 23:26:20.539 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-26 23:26:20.563 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-07-26 23:26:20.577 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2024-07-26 23:26:20.708 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-26 23:26:20.719 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-07-26 23:26:20.882 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@10f10230
+2024-07-26 23:26:20.883 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-07-26 23:26:21.334 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-07-26 23:26:21.649 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-26 23:26:21.996 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-5555"]
+2024-07-26 23:26:22.002 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 5555 (http) with context path '/'
+2024-07-26 23:26:22.007 [main] INFO  com.leuan.lepton.LeptonApplicationKt - Started LeptonApplicationKt in 2.444 seconds (process running for 2.801)
+2024-07-26 23:36:32.371 [main] INFO  com.leuan.lepton.LeptonApplicationKt - Starting LeptonApplicationKt using Java 17.0.10 with PID 9728 (/Users/yangyang/Projects/lepton/lepton-application/build/classes/kotlin/main started by yangyang in /Users/yangyang/Projects/lepton)
+2024-07-26 23:36:32.373 [main] INFO  com.leuan.lepton.LeptonApplicationKt - The following 1 profile is active: "dev"
+2024-07-26 23:36:33.317 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-26 23:36:33.364 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 42 ms. Found 3 JPA repository interfaces.
+2024-07-26 23:36:33.592 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 5555 (http)
+2024-07-26 23:36:33.597 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-5555"]
+2024-07-26 23:36:33.597 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-07-26 23:36:33.598 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2024-07-26 23:36:33.623 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-07-26 23:36:33.623 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1223 ms
+2024-07-26 23:36:33.703 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-26 23:36:33.729 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-07-26 23:36:33.743 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2024-07-26 23:36:33.879 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-26 23:36:33.890 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-07-26 23:36:34.075 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6e6c8854
+2024-07-26 23:36:34.076 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-07-26 23:36:34.550 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-07-26 23:36:34.749 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-26 23:36:35.146 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-5555"]
+2024-07-26 23:36:35.152 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 5555 (http) with context path '/'
+2024-07-26 23:36:35.157 [main] INFO  com.leuan.lepton.LeptonApplicationKt - Started LeptonApplicationKt in 3.229 seconds (process running for 3.529)
+2024-07-26 23:36:38.002 [http-nio-5555-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-26 23:36:38.002 [http-nio-5555-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-07-26 23:36:38.003 [http-nio-5555-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-07-26 23:36:38.187 [http-nio-5555-exec-1] INFO  org.springdoc.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 158 ms
+2024-07-26 23:45:46.601 [main] INFO  com.leuan.lepton.LeptonApplicationKt - Starting LeptonApplicationKt using Java 17.0.10 with PID 9845 (/Users/yangyang/Projects/lepton/lepton-application/build/classes/kotlin/main started by yangyang in /Users/yangyang/Projects/lepton)
+2024-07-26 23:45:46.602 [main] INFO  com.leuan.lepton.LeptonApplicationKt - The following 1 profile is active: "dev"
+2024-07-26 23:45:47.036 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-26 23:45:47.063 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 22 ms. Found 3 JPA repository interfaces.
+2024-07-26 23:45:47.249 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 5555 (http)
+2024-07-26 23:45:47.254 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-5555"]
+2024-07-26 23:45:47.254 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-07-26 23:45:47.255 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2024-07-26 23:45:47.277 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-07-26 23:45:47.277 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 658 ms
+2024-07-26 23:45:47.340 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-26 23:45:47.363 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-07-26 23:45:47.375 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2024-07-26 23:45:47.505 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-26 23:45:47.517 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-07-26 23:45:47.693 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4be1dce6
+2024-07-26 23:45:47.694 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-07-26 23:45:48.147 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-07-26 23:45:48.325 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-26 23:45:48.720 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-5555"]
+2024-07-26 23:45:48.726 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 5555 (http) with context path '/'
+2024-07-26 23:45:48.732 [main] INFO  com.leuan.lepton.LeptonApplicationKt - Started LeptonApplicationKt in 2.389 seconds (process running for 2.834)
+2024-07-26 23:45:51.757 [http-nio-5555-exec-2] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-26 23:45:51.758 [http-nio-5555-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-07-26 23:45:51.758 [http-nio-5555-exec-2] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
