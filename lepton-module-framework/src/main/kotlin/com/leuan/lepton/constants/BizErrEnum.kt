@@ -1,0 +1,6 @@
+package com.leuan.lepton.constants
+
+enum class BizErrEnum(val code: Int, val message: String) {
+    BIZ(500, "业务异常"),
+    TENANT_NOT_FOUND(1001, "租户不存在");
+}

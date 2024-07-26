@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://d3-cf.com:5432/lepton?timezone=UTF-8
+    username: lepton
+    password: lepton_admin
+  jpa:
+    hibernate:
+      ddl-auto: update
