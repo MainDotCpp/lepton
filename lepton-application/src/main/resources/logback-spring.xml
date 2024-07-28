@@ -196,6 +196,13 @@
     -->
 
 
+    <logger name="jdbc.connection" level="OFF"/>
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.resultsettable" level="OFF"/>
+    <logger name="jdbc.audit" level="OFF"/>
+    <logger name="jdbc.sqltiming" level="INFO"/>
+    <logger name="jdbc.sqlonly" level="OFF"/>
+
     <!-- 4  最终的策略：
                  基本策略(root级) + 根据profile在启动时, logger标签中定制化package日志级别(优先级高于上面的root级)-->
     <springProfile name="dev">

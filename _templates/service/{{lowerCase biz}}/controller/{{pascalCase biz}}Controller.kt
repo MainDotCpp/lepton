@@ -1,8 +1,8 @@
-package {{package}}.{{camelCase biz}}.controller
+package {{module.package}}.{{camelCase biz}}.controller
 
-import {{package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
-import {{package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
-import {{package}}.{{camelCase biz}}.service.{{pascalCase biz}}Service
+import {{module.package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
+import {{module.package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
+import {{module.package}}.{{camelCase biz}}.service.{{pascalCase biz}}Service
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag

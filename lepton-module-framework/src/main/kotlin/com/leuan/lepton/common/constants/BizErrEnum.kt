@@ -9,4 +9,7 @@ enum class BizErrEnum(val code: Int, val message: String) {
     USER_NOT_FOUND(1002, "用户不存在"),
     MENU_NOT_FOUND(1003, "菜单不存在"),
     ROLE_NOT_FOUND(1004, "系统角色不存在 "),
+
+    // 客资模块
+    CUSTOMER_NOT_FOUND(3002, "客资不存在"),
 }

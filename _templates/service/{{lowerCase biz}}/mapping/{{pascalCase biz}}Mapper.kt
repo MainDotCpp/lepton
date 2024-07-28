@@ -1,8 +1,8 @@
-package {{package}}.{{camelCase biz}}.mapping
+package {{module.package}}.{{camelCase biz}}.mapping
 
-import {{package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
-import {{package}}.{{camelCase biz}}.controller.vo.{{pascalCase biz}}VO
-import {{package}}.{{camelCase biz}}.dal.{{pascalCase biz}}
+import {{module.package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
+import {{module.package}}.{{camelCase biz}}.controller.vo.{{pascalCase biz}}VO
+import {{module.package}}.{{camelCase biz}}.dal.{{pascalCase biz}}
 import org.mapstruct.*
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)

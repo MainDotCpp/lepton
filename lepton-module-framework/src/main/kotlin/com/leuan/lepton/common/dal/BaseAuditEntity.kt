@@ -1,12 +1,12 @@
 package com.leuan.lepton.common.dal
 
 import jakarta.persistence.*
-import org.hibernate.annotations.ColumnDefault
-import org.hibernate.annotations.Comment
+import org.hibernate.annotations.*
 import java.util.Date
 
 
 @MappedSuperclass
+@EntityListeners(TenantEventListener::class)
 open class BaseAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,5 +36,6 @@ open class BaseAuditEntity {
     @Comment("租户ID")
     @ColumnDefault("0")
     @Column(name = "tenant_id")
+    @TenantId
     open var tenantId: Long = 0
 }

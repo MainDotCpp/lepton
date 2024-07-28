@@ -1,3 +1,15 @@
+const moduleMapping = {
+    framework: {
+        package: 'com.leuan.lepton',
+        module: 'lepton-module-framework',
+        dir: 'src/main/kotlin/com/leuan/lepton'
+    },
+    customer: {
+        package: 'com.leuan.lepton.customer',
+        module: 'lepton-module-customer',
+        dir: 'src/main/kotlin/com/leuan/lepton/customer'
+    }
+}
 export default function Plopfile(plop) {
     plop.setGenerator('pojo', {
             description: 'application controller logic',
@@ -6,10 +18,7 @@ export default function Plopfile(plop) {
                     type: 'list',
                     name: 'module',
                     message: '模块',
-                    choices: [
-                        'lepton-module-framework/src/main/kotlin/com/leuan/lepton',
-                        'lepton-module-customer/src/main/kotlin/com/leuan/lepton/customer'
-                    ]
+                    choices: Object.keys(moduleMapping)
                 },
                 {
                     type: 'input',
@@ -22,17 +31,20 @@ export default function Plopfile(plop) {
                     message: '请输入业务注释'
                 }
             ],
-            actions: [{
-                type: 'addMany',
-                base: '_templates/service',
-                destination: '{{module}}',
-                force: true,
-                templateFiles: '_templates/service',
-                data: {
-                    package: 'com.leuan.lepton',
-                }
-
-            }]
+            actions: (data) => {
+                console.log(`plop ${data.module} ${data.biz} ${data.comment}`)
+                data.module = moduleMapping[data.module]
+                return [{
+                    type: 'addMany',
+                    base: '_templates/service',
+                    destination: '{{module.module}}/{{module.dir}}',
+                    force: true,
+                    templateFiles: '_templates/service',
+                    data: {
+                        basePackage: 'com.leuan.lepton',
+                    }
+                }]
+            }
         }
     )
 }

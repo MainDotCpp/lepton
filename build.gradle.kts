@@ -59,6 +59,7 @@ allprojects {
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
         implementation(group = "com.querydsl", name = "querydsl-jpa", version = "5.1.0", classifier = "jakarta")
         kapt(group = "com.querydsl", name = "querydsl-apt", version = "5.1.0", classifier = "jakarta")
+        implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
 
         // 缓存
         implementation("org.redisson:redisson-spring-boot-starter:3.33.0")

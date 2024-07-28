@@ -48,8 +48,7 @@ class SecurityConfig {
             // 配置请求授权
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("auth/login").permitAll()
-                    .requestMatchers("menu/tree").permitAll()
+                    .requestMatchers(*leptonConfig.ignoreLoginUrl.toTypedArray()).permitAll()
                     .anyRequest()
                     .authenticated()
             }

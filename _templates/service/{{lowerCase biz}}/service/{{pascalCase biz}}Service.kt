@@ -1,16 +1,16 @@
-package {{package}}.{{camelCase biz}}.service
+package {{module.package}}.{{camelCase biz}}.service
 
-import {{package}}.common.exception.BizErr
-import {{package}}.common.http.PageDTO
-import {{package}}.common.log.logInfo
-import {{package}}.common.utils.toJson
-import {{package}}.constants.BizErrEnum
-import {{package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
-import {{package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
-import {{package}}.{{camelCase biz}}.controller.vo.{{pascalCase biz}}VO
-import {{package}}.{{camelCase biz}}.dal.Q{{pascalCase biz}}
-import {{package}}.{{camelCase biz}}.dal.{{pascalCase biz}}Repository
-import {{package}}.{{camelCase biz}}.mapping.{{pascalCase biz}}Mapper
+import {{basePackage}}.common.exception.BizErr
+import {{basePackage}}.common.http.PageDTO
+import {{basePackage}}.common.log.logInfo
+import {{basePackage}}.common.utils.toJson
+import {{basePackage}}.common.constants.BizErrEnum
+import {{module.package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
+import {{module.package}}.{{camelCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
+import {{module.package}}.{{camelCase biz}}.controller.vo.{{pascalCase biz}}VO
+import {{module.package}}.{{camelCase biz}}.dal.Q{{pascalCase biz}}
+import {{module.package}}.{{camelCase biz}}.dal.{{pascalCase biz}}Repository
+import {{module.package}}.{{camelCase biz}}.mapping.{{pascalCase biz}}Mapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
