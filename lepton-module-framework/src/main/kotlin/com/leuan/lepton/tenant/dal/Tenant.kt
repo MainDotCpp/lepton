@@ -1,5 +1,6 @@
 package com.leuan.lepton.tenant.dal
 
+import com.leuan.lepton.syspackage.dal.SysPackage
 import com.leuan.lepton.tenant.enums.TenantTypeEnum
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
@@ -23,4 +24,8 @@ class Tenant {
     @ColumnDefault("'ACTIVE'")
     @Column(name = "type", nullable = false)
     var type: TenantTypeEnum = TenantTypeEnum.ACTIVE
+
+    @ManyToOne
+    @JoinColumn(name = "sys_package_id")
+    var sysPackage: SysPackage? = null
 }

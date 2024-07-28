@@ -9,6 +9,7 @@ import com.leuan.lepton.syspackage.controller.dto.SysPackageQueryDTO
 import com.leuan.lepton.syspackage.controller.dto.SysPackageSaveDTO
 import com.leuan.lepton.syspackage.controller.vo.SysPackageVO
 import com.leuan.lepton.syspackage.dal.QSysPackage
+import com.leuan.lepton.syspackage.dal.SysPackage
 import com.leuan.lepton.syspackage.dal.SysPackageRepository
 import com.leuan.lepton.syspackage.mapping.SysPackageMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -79,7 +80,8 @@ class SysPackageService {
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(QSysPackage.sysPackage.id.count()).from(QSysPackage.sysPackage).where(*expressions).fetchOne() ?: 0
+            jpaQueryFactory.select(QSysPackage.sysPackage.id.count()).from(QSysPackage.sysPackage).where(*expressions)
+                .fetchOne() ?: 0
         pageDTO.records = query.fetch().map(sysPackageMapper::entityToVO)
         return pageDTO
     }
@@ -92,9 +94,10 @@ class SysPackageService {
     fun save(sysPackageSaveDTO: SysPackageSaveDTO): SysPackageVO {
         val entity = sysPackageSaveDTO.id?.let {
             sysPackageRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
-        } ?: sysPackageMapper.saveDtoToEntity(sysPackageSaveDTO)
+        } ?: SysPackage()
+
+        sysPackageMapper.partialUpdate(sysPackageSaveDTO, entity)
         sysPackageRepository.save(entity)
-        logInfo("保存系统套餐成功|${entity.toJson()}")
         return sysPackageMapper.entityToVO(entity)
     }
 

@@ -90,12 +90,13 @@ class {{pascalCase biz}}Service {
      * @return [{{pascalCase biz}}VO]
      */
     fun save({{camelCase biz}}SaveDTO: {{pascalCase biz}}SaveDTO): {{pascalCase biz}}VO {
-        val entity = {{camelCase biz}}SaveDTO.id?.let {
-            {{camelCase biz}}Repository.findById(it).orElseThrow { BizErr(BizErrEnum.{{constantCase biz}}_NOT_FOUND) }
-        } ?: {{camelCase biz}}Mapper.saveDtoToEntity({{camelCase biz}}SaveDTO)
-        {{camelCase biz}}Repository.save(entity)
-        logInfo("保存{{comment}}成功|${entity.toJson()}")
-        return {{camelCase biz}}Mapper.entityToVO(entity)
+        val entity = {{pascalCase biz}}SaveDTO.id?.let {
+            {{pascalCase biz}}Repository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        } ?: SysPackage()
+
+        {{pascalCase biz}}Mapper.partialUpdate({{pascalCase biz}}SaveDTO, entity)
+        {{pascalCase biz}}Repository.save(entity)
+        return {{pascalCase biz}}Mapper.entityToVO(entity)
     }
 
     /**

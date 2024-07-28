@@ -70,6 +70,7 @@ allprojects {
         allOpen {
             annotations("jakarta.persistence.Entity")
             annotations("com.leuan.lepton.common.annotations.AllOpen")
+            annotations("lombok.NoArgsConstructor")
         }
         noArg {
             annotations("jakarta.persistence.Entity")

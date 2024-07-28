@@ -10,8 +10,9 @@ abstract class {{pascalCase biz}}Mapper {
     abstract fun toEntity({{camelCase biz}}VO: {{pascalCase biz}}VO): {{pascalCase biz}}
     abstract fun entityToVO({{camelCase biz}}: {{pascalCase biz}}): {{pascalCase biz}}VO
 
+    @InheritConfiguration
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    abstract fun partialUpdate({{camelCase biz}}VO: {{pascalCase biz}}VO, @MappingTarget {{camelCase biz}}: {{pascalCase biz}}): {{pascalCase biz}}
+    abstract fun partialUpdate(saveDTO: {{camelCase biz}}SaveDTO, @MappingTarget {{pascalCase biz}}: {{camelCase biz}}): {{camelCase biz}}
 
     abstract fun saveDtoToEntity({{camelCase biz}}SaveDTO: {{pascalCase biz}}SaveDTO): {{pascalCase biz}}
 }

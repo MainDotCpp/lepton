@@ -7,5 +7,7 @@ import com.leuan.lepton.common.annotations.NoArgs
  */
 @NoArgs
 data class SysPackageSaveDTO(
-    val id: Long? = null, val name: String = "", val menuIds: MutableSet<Long>?,
+    val id: Long? = null,
+    val name: String = "",
+    val menuIds: MutableSet<Long>?,
 )
