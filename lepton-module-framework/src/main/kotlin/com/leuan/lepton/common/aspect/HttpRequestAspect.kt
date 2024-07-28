@@ -1,27 +1,28 @@
 package com.leuan.lepton.common.aspect
 
-import com.leuan.lepton.common.http.HttpResult
 import com.leuan.lepton.common.log.logInfo
+import io.swagger.v3.oas.annotations.Operation
+import jakarta.annotation.Resource
+import jakarta.servlet.http.HttpServletRequest
 import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
-import org.aspectj.lang.annotation.Pointcut
+import org.aspectj.lang.annotation.Before
+import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.stereotype.Component
 
 @Aspect
 @Component
 class HttpRequestAspect {
 
+    @Resource
+    private lateinit var request: HttpServletRequest
 
-    @Pointcut("@annotation(org.springframework.web.bind.annotation.RestController)")
-    fun pointCut() {
-    }
-
-    @Around("pointCut()")
-    fun around(pj: ProceedingJoinPoint): Any? {
-        logInfo("HttpRequestAspect.around")
-        val result = pj.proceed()
-        return result
+    @Before("@annotation(io.swagger.v3.oas.annotations.Operation)")
+    fun before(pj: ProceedingJoinPoint) {
+        // 获取注解
+        val signature = pj.signature as MethodSignature
+        val operation = signature.method.getAnnotation(Operation::class.java)
+        logInfo("[${operation.summary}] ${request.requestURI}")
     }
 
 }

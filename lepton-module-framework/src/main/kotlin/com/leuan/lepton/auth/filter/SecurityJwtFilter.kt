@@ -29,7 +29,6 @@ class SecurityJwtFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        logInfo("进入自定义过滤器: SecurityJwtFilter")
         // 获取请求头中的token,可能在header中或者cookie中
         val token = request.getHeader(TOKEN_NAME) ?: request.cookies?.find { it.name == TOKEN_NAME }?.value
 
@@ -56,8 +55,6 @@ class SecurityJwtFilter(
         val userInfo = leptonUserDetailService.loadUserByUsername(userId) as UserInfoVO
         val authenticationToken = UsernamePasswordAuthenticationToken(userInfo, null, userInfo.authorities)
         SecurityContextHolder.getContext().authentication = authenticationToken
-        logInfo("用户${userInfo.id}已登录")
-
 
         setThreadContext(ThreadContext(userInfo.tenants.first(), userInfo.id, userInfo.name, token))
         filterChain.doFilter(request, response)
