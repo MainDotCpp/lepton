@@ -1,13 +1,13 @@
-package com.leuan.lepton.user.controller.dto
+package com.leuan.lepton.syspackage.controller.dto
 
 import com.leuan.lepton.common.annotations.NoArgs
 import com.leuan.lepton.common.http.PageParams
 import io.swagger.v3.oas.annotations.media.Schema
 
 @NoArgs
-@Schema(description = "系统用户查询参数")
-data class UserQueryDTO(
-    @Schema(description = "系统用户ID")
+@Schema(description = "系统套餐查询参数")
+data class SysPackageQueryDTO(
+    @Schema(description = "系统套餐ID")
     val id: Long? = null,
     @Schema(description = "当前页")
     override var current: Long = 1,

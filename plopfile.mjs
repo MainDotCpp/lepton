@@ -37,7 +37,7 @@ export default function Plopfile(plop) {
                 return [{
                     type: 'addMany',
                     base: '_templates/service',
-                    destination: '{{module.module}}/{{module.dir}}',
+                    destination: '{{module.module}}/{{lowerCase module.dir}}',
                     force: true,
                     templateFiles: '_templates/service',
                     data: {

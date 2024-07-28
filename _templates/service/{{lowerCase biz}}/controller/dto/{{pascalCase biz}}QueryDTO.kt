@@ -1,8 +1,10 @@
-package {{module.package}}.{{camelCase biz}}.controller.dto
+package {{lowerCase module.package}}.{{lowerCase biz}}.controller.dto
 
+import com.leuan.lepton.common.annotations.NoArgs
 import com.leuan.lepton.common.http.PageParams
 import io.swagger.v3.oas.annotations.media.Schema
 
+@NoArgs
 @Schema(description = "{{comment}}查询参数")
 data class {{pascalCase biz}}QueryDTO(
     @Schema(description = "{{comment}}ID")

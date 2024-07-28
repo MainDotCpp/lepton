@@ -1,4 +1,4 @@
-package {{module.package}}.{{camelCase biz}}.dal;
+package {{lowerCase module.package}}.{{lowerCase biz}}.dal;
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor

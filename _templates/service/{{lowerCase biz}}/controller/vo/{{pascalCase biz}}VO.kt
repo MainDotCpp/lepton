@@ -1,11 +1,12 @@
-package {{module.package}}.{{camelCase biz}}.controller.vo
+package {{lowerCase module.package}}.{{lowerCase biz}}.controller.vo
 
 import java.io.Serializable
+import com.leuan.lepton.common.annotations.NoArgs
 
 /**
- * DTO for {@link {{module.package}}.{{camelCase biz}}.dal.{{pascalCase biz}} }
+ * DTO for {@link {{lowerCase module.package}}.{{lowerCase biz}}.dal.{{pascalCase biz}} }
  */
+@NoArgs
 data class {{pascalCase biz}}VO(
-    var id: Long? = null,
-    var name: String = ""
+    var id: Long
 ) : Serializable
