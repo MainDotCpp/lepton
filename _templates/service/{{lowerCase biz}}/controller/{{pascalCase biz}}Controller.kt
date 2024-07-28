@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.annotation.Resource
 import org.springframework.web.bind.annotation.*
 
-@Tag(name = "{{comment}}")
+@Tag(name = "{{pascalCase biz}}")
 @RestController
 @RequestMapping("{{camelCase biz}}")
 class {{pascalCase biz}}Controller {
@@ -35,6 +35,6 @@ class {{pascalCase biz}}Controller {
     fun save(@RequestBody saveDTO: {{pascalCase biz}}SaveDTO) = {{camelCase biz}}Service.save(saveDTO)
 
     @Operation(summary = "根据ID删除{{comment}}")
-    @GetMapping("delete")
+    @GetMapping("deleteById")
     fun deleteById(id: Long) = {{camelCase biz}}Service.deleteById(id)
 }

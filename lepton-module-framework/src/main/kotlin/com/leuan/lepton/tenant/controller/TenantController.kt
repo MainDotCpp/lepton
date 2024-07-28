@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
-@Tag(name = "租户")
+@Tag(name = "Tenant")
 @RestController
 @RequestMapping("tenant")
 class TenantController {
@@ -38,6 +38,6 @@ class TenantController {
     fun save(@RequestBody saveDTO: TenantSaveDTO) = tenantService.save(saveDTO)
 
     @Operation(summary = "根据ID删除租户")
-    @GetMapping("delete")
+    @GetMapping("deleteById")
     fun deleteById(id: Long) = tenantService.deleteById(id)
 }

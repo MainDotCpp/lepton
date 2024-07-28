@@ -45,3 +45,15 @@ springdoc:
 logging:
   file:
     path: logs
+
+--- #################### 系统配置 ####################
+lepton:
+  ignore-login-url:
+    - /v3/api-docs
+    - /auth/login
+    - /user/test
+  ignore-tenant-table:
+    - sys_user
+    - sys_tenant
+  auth:
+    token-expire-days: 3

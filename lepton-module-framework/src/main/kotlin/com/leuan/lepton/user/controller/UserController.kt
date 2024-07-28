@@ -1,7 +1,9 @@
 package com.leuan.lepton.user.controller
 
+import com.leuan.lepton.common.utils.redissonClient
 import com.leuan.lepton.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.user.controller.dto.UserSaveDTO
+import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -9,7 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.annotation.Resource
 import org.springframework.web.bind.annotation.*
 
-@Tag(name = "系统用户")
+@Tag(name = "User")
 @RestController
 @RequestMapping("user")
 class UserController {
@@ -35,6 +37,13 @@ class UserController {
     fun save(@RequestBody saveDTO: UserSaveDTO) = userService.save(saveDTO)
 
     @Operation(summary = "根据ID删除系统用户")
-    @GetMapping("delete")
+    @GetMapping("deleteById")
     fun deleteById(id: Long) = userService.deleteById(id)
+
+    @Operation(summary = "测试")
+    @GetMapping("test")
+    fun test(): UserInfoVO? {
+        return redissonClient.getBucket<UserInfoVO>("session:1").get()
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.leuan.lepton.user.dal
 
 import com.leuan.lepton.common.dal.BaseAuditEntity
+import com.leuan.lepton.role.dal.Role
 import com.leuan.lepton.tenant.dal.Tenant
 import jakarta.persistence.*
 import org.hibernate.annotations.Comment
@@ -11,15 +12,15 @@ import org.hibernate.annotations.Comment
 class User : BaseAuditEntity() {
     @Comment("姓名")
     @Column(name = "name")
-    var name: String? = null
+    var name: String = ""
 
     @Comment("手机号")
     @Column(name = "phone", unique = true, nullable = false)
-    var phone: String? = null
+    var phone: String = ""
 
     @Comment("密码")
     @Column(name = "password", nullable = false)
-    var password: String? = null
+    var password: String = ""
 
     @ManyToMany
     @JoinTable(
@@ -28,4 +29,12 @@ class User : BaseAuditEntity() {
         inverseJoinColumns = [JoinColumn(name = "tenant_id")]
     )
     var tenants: MutableSet<Tenant> = mutableSetOf()
+
+    @ManyToMany
+    @JoinTable(
+        name = "sys_user_role",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "role_id")]
+    )
+    var roles: MutableSet<Role> = mutableSetOf()
 }

@@ -7,3 +7,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  data:
+    redis:
+      address: redis://43.136.92.103:6379
+      database: 2
+      password: Leuan_3rd
+

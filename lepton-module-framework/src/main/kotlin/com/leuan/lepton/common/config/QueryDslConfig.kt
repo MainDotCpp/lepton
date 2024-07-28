@@ -1,4 +1,4 @@
-package com.leuan.lepton.config
+package com.leuan.lepton.common.config
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager

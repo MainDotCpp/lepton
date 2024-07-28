@@ -1,6 +1,6 @@
 package com.leuan.lepton.common.exception
 
-import com.leuan.lepton.constants.BizErrEnum
+import com.leuan.lepton.common.constants.BizErrEnum
 
 class BizErr : RuntimeException {
     var code: Int

@@ -11,7 +11,7 @@ open class BaseAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    open var id: Long? = null
+    open var id: Long = 0
 
     @Comment("创建人")
     @ColumnDefault("0")

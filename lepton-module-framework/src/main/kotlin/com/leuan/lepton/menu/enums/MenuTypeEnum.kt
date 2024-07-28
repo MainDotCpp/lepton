@@ -1,4 +1,4 @@
-package com.leuan.lepton.menu.enum
+package com.leuan.lepton.menu.enums
 
 enum class MenuTypeEnum {
     CATALOG,

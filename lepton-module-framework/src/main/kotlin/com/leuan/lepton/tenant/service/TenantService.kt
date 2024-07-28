@@ -4,7 +4,7 @@ import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.utils.toJson
-import com.leuan.lepton.constants.BizErrEnum
+import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.tenant.controller.dto.TenantSaveDTO
 import com.leuan.lepton.tenant.controller.vo.TenantVO

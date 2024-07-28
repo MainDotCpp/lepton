@@ -1,12 +1,14 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
+    id("io.freefair.lombok") version "8.1.0"
+
+    kotlin("jvm") version "1.9.22"
+    kotlin("kapt") version "2.0.0"
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.lombok") version "2.0.0"
-    id("io.freefair.lombok") version "8.1.0"
-    kotlin("kapt") version "2.0.0"
     kotlin("plugin.allopen") version "2.0.0"
+    kotlin("plugin.noarg") version "2.0.0"
 }
 
 group = "com.leuan"
@@ -44,11 +46,13 @@ allprojects {
         apply(plugin = "kotlin")
         apply(plugin = "kotlin-spring")
         apply(plugin = "kotlin-kapt")
+        apply(plugin = "kotlin-noarg")
 
         implementation("org.jetbrains.kotlin:kotlin-reflect")
 
         // WEB
         implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-security:3.3.2")
 
         // DB 相关
         implementation("org.postgresql:postgresql:42.7.3")
@@ -56,12 +60,20 @@ allprojects {
         implementation(group = "com.querydsl", name = "querydsl-jpa", version = "5.1.0", classifier = "jakarta")
         kapt(group = "com.querydsl", name = "querydsl-apt", version = "5.1.0", classifier = "jakarta")
 
+        // 缓存
+        implementation("org.redisson:redisson-spring-boot-starter:3.33.0")
 
         // 工具相关
         implementation("org.projectlombok:lombok")
         implementation("cn.hutool:hutool-all:5.8.29")
         allOpen {
             annotations("jakarta.persistence.Entity")
+            annotations("com.leuan.lepton.common.annotations.AllOpen")
+        }
+        noArg {
+            annotations("jakarta.persistence.Entity")
+            annotations("com.leuan.lepton.common.annotations.NoArg")
+            annotations("lombok.NoArgsConstructor")
         }
 
         // AOP

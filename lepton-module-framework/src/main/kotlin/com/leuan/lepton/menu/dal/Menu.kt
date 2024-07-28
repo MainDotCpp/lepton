@@ -1,9 +1,10 @@
 package com.leuan.lepton.menu.dal
 
-import com.leuan.lepton.menu.enum.MenuTypeEnum
+import com.leuan.lepton.menu.enums.MenuTypeEnum
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.Comment
+import org.hibernate.proxy.HibernateProxy
 
 @Comment("菜单")
 @Entity
@@ -25,8 +26,8 @@ class Menu {
     var parentId: Long = 0
 
     @ColumnDefault("'CATALOG'")
-    @Comment("菜单类型")
     @Enumerated(EnumType.STRING)
+    @Comment("菜单类型")
     @Column(name = "type", nullable = false)
     var type: MenuTypeEnum = MenuTypeEnum.CATALOG
 
@@ -64,5 +65,20 @@ class Menu {
     @ColumnDefault("''")
     @Column(name = "permission", nullable = false)
     var permission: String = ""
+    final override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null) return false
+        val oEffectiveClass =
+            if (other is HibernateProxy) other.hibernateLazyInitializer.persistentClass else other.javaClass
+        val thisEffectiveClass =
+            if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
+        if (thisEffectiveClass != oEffectiveClass) return false
+        other as Menu
+
+        return id != null && id == other.id
+    }
+
+    final override fun hashCode(): Int =
+        if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
 
 }

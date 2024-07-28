@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.annotation.Resource
 import org.springframework.web.bind.annotation.*
 
-@Tag(name = "系统菜单")
+@Tag(name = "Menu")
 @RestController
 @RequestMapping("menu")
 class MenuController {
@@ -35,7 +35,7 @@ class MenuController {
     fun save(@RequestBody saveDTO: MenuSaveDTO) = menuService.save(saveDTO)
 
     @Operation(summary = "根据ID删除系统菜单")
-    @GetMapping("delete")
+    @GetMapping("deleteById")
     fun deleteById(id: Long) = menuService.deleteById(id)
 
     @Operation(summary = "获取系统菜单树")

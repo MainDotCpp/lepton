@@ -9,15 +9,17 @@ import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.utils.toJson
-import com.leuan.lepton.constants.BizErrEnum
+import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.menu.controller.dto.MenuQueryDTO
 import com.leuan.lepton.menu.controller.dto.MenuSaveDTO
 import com.leuan.lepton.menu.controller.vo.MenuVO
 import com.leuan.lepton.menu.dal.QMenu
 import com.leuan.lepton.menu.dal.MenuRepository
+import com.leuan.lepton.menu.enums.MenuTypeEnum
 import com.leuan.lepton.menu.mapping.MenuMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
+import org.springframework.data.jpa.repository.query.JpaQueryExecution
 import org.springframework.stereotype.Service
 
 /**
@@ -114,8 +116,12 @@ class MenuService {
         return true
     }
 
-    fun getMenuTree(): Tree<Long> {
-        val menus = menuRepository.findAll() // TODO: 替换为只查找当前租户套餐内的菜单
+    fun getMenuTree(): Tree<Long>? {
+        val menus = jpaQueryFactory.selectFrom(QMenu.menu)
+            .where(
+                QMenu.menu.type.ne(MenuTypeEnum.BUTTON),
+                QMenu.menu.hidden.eq(false)
+            ).fetch()
 
         val config = TreeNodeConfig()
         config.weightKey = "sort"
@@ -135,7 +141,15 @@ class MenuService {
             )
             node
         }
-        return TreeUtil.buildSingle(treeNodes, 0L)
+        logInfo("菜单树：${treeNodes.toJson()}")
+        return TreeUtil.buildSingle(treeNodes, 0L, config) { t, tree ->
+            tree.id = t.id
+            tree.parentId = t.parentId
+            tree.name = t.name
+            tree.putExtra("sort", t.weight)
+            tree.putExtra("path", t.extra["path"])
+            tree.putExtra("icon", t.extra["icon"])
+        }
     }
 
 }
