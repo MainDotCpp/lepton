@@ -130,15 +130,16 @@ class UserService {
             .fetchOne()
     }
 
-    fun getUserInfo(id: Long? = getThreadContext().userId): UserInfoVO = cache("session:${id}") {
-        if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
-        val user = userRepository.findById(id).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
-        val userInfo = userMapper.toDto(user)
-        val context = getThreadContext()
-        redissonClient
-            .getBucket<UserInfoVO>("$SESSION_CACHE_PREFIX:${context.userId}")
-            .set(userInfo)
-        userInfo
-    }
+    fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
+        cache("session:${id}", fresh = freshCache) {
+            if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
+            val user = userRepository.findById(id).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
+            val userInfo = userMapper.toDto(user)
+            val context = getThreadContext()
+            redissonClient
+                .getBucket<UserInfoVO>("$SESSION_CACHE_PREFIX:${context.userId}")
+                .set(userInfo)
+            userInfo
+        }
 
 }

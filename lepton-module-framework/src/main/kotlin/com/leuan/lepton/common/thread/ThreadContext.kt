@@ -1,12 +1,15 @@
 package com.leuan.lepton.common.thread
 
+import com.leuan.lepton.common.annotations.NoArgs
 import com.leuan.lepton.common.log.logInfo
 
 
+@NoArgs
 data class ThreadContext(
-    var tenantId: Long?,
-    var userId: Long?,
-    var username: String = "",
+    var tenantId: Long = -1L,
+    var userId: Long,
+    var username: String,
+    var token: String
 )
 
 val threadLocal = ThreadLocal<ThreadContext>()

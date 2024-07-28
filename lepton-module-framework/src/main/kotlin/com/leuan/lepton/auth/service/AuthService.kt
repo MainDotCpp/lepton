@@ -4,12 +4,14 @@ import cn.hutool.jwt.JWTUtil
 import com.leuan.lepton.auth.controller.dto.LoginDTO
 import com.leuan.lepton.common.config.LeptonConfig
 import com.leuan.lepton.common.constants.BizErrEnum
+import com.leuan.lepton.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.common.constants.TOKEN_CACHE_PREFIX
 import com.leuan.lepton.common.constants.TOKEN_NAME
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.ThreadContext
 import com.leuan.lepton.common.thread.clearThreadContext
+import com.leuan.lepton.common.thread.getThreadContext
 import com.leuan.lepton.common.thread.setThreadContext
 import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.service.UserService
@@ -74,9 +76,17 @@ class AuthService {
         }
 
         // 获取用户信息
-        setThreadContext(ThreadContext(user.tenants.first().id, user.id, user.name))
+        setThreadContext(ThreadContext(user.tenants.first().id ?: -1L, user.id, user.name, token))
         val userInfo = userService.getUserInfo()
-        clearThreadContext()
         return userInfo
     }
+
+    fun logout(): Boolean {
+        val ctx = getThreadContext()
+        redissonClient.getBucket<String>("$TOKEN_CACHE_PREFIX:${ctx.token}").delete()
+        redissonClient.getBucket<String>("$SESSION_CACHE_PREFIX:${ctx.userId}").delete()
+        return true
+    }
+
+    fun flushSession(userId: Long = getThreadContext().userId!!) = userService.getUserInfo(userId, true)
 }

@@ -10,30 +10,26 @@ import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.ThreadContext
 import com.leuan.lepton.common.thread.clearThreadContext
 import com.leuan.lepton.common.thread.setThreadContext
+import com.leuan.lepton.common.utils.redissonClient
 import com.leuan.lepton.user.controller.vo.UserInfoVO
 import jakarta.annotation.Resource
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.redisson.api.RedissonClient
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
-@Component
-class SecurityJwtFilter : OncePerRequestFilter() {
+class SecurityJwtFilter(
+    private val leptonUserDetailService: LeptonUserDetailService
+) : OncePerRequestFilter() {
 
-    @Resource
-    private lateinit var redissonClient: RedissonClient
-
-    @Resource
-    private lateinit var leptonUserDetailService: LeptonUserDetailService
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        logInfo("进入自定义过滤器: SecurityJwtFilter")
         // 获取请求头中的token,可能在header中或者cookie中
         val token = request.getHeader(TOKEN_NAME) ?: request.cookies?.find { it.name == TOKEN_NAME }?.value
 
@@ -45,11 +41,15 @@ class SecurityJwtFilter : OncePerRequestFilter() {
 
         // 如果token不为空，解析token，获取用户信息
         if (JWTUtil.verify(token, "lepton".toByteArray()).not()) {
-            throw IllegalArgumentException("token验证失败")
+            filterChain.doFilter(request, response)
+            return
         }
 
         val userId = redissonClient.getBucket<String>("$TOKEN_CACHE_PREFIX:$token").run {
-            if (!isExists) throw BizErr(BizErrEnum.LOGIN_EXPIRED)
+            if (!isExists) {
+                filterChain.doFilter(request, response)
+                return
+            }
             get()
         }
 
@@ -58,7 +58,8 @@ class SecurityJwtFilter : OncePerRequestFilter() {
         SecurityContextHolder.getContext().authentication = authenticationToken
         logInfo("用户${userInfo.id}已登录")
 
-        setThreadContext(ThreadContext(0L, userInfo.id, userInfo.name))
+
+        setThreadContext(ThreadContext(userInfo.tenants.first(), userInfo.id, userInfo.name, token))
         filterChain.doFilter(request, response)
         clearThreadContext()
     }

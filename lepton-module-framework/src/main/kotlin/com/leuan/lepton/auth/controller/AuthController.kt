@@ -22,4 +22,7 @@ class AuthController {
     @PostMapping("/login")
     fun login(@RequestBody loginDTO: LoginDTO) = authService.login(loginDTO)
 
+    @Operation(summary = "登出")
+    @PostMapping("/logout")
+    fun logout() = authService.logout()
 }
