@@ -1,5 +1,7 @@
 package com.leuan.lepton.common.http
 
+import com.leuan.lepton.common.exception.BizErr
+
 data class HttpResult<T : Any?>(val code: Int, val message: String, val data: T? = null)
 
 fun <T> success(data: T? = null): HttpResult<T?> {
@@ -8,4 +10,8 @@ fun <T> success(data: T? = null): HttpResult<T?> {
 
 fun <T> fail(code: Int, message: String): HttpResult<T?> {
     return HttpResult(code, message)
+}
+
+fun <T> fail(bizErr: BizErr): HttpResult<T?> {
+    return HttpResult(bizErr.code, bizErr.message)
 }

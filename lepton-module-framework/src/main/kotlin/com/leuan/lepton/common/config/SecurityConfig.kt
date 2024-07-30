@@ -7,6 +7,9 @@ import com.leuan.lepton.common.utils.toJson
 import jakarta.annotation.Resource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -17,20 +20,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig {
 
     @Resource
     private lateinit var leptonConfig: LeptonConfig
 
+    @Resource
+    private lateinit var authenticationConfiguration: AuthenticationConfiguration
+
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
 
-//    @Bean
-//    fun ignoringCustomizer(leptonConfig: LeptonConfig): WebSecurityCustomizer {
-//        return WebSecurityCustomizer { web ->
-//            web.ignoring().requestMatchers(*leptonConfig.ignoreLoginUrl.toTypedArray())
-//        }
-//    }
+
+    /**
+     * 认证管理器，登录的时候参数会传给 authenticationManager
+     */
+    @Bean
+    @Throws(Exception::class)
+    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
+        return authenticationConfiguration.authenticationManager
+    }
 
     /**
      * 安全过滤链
@@ -45,6 +55,7 @@ class SecurityConfig {
             .csrf { it.disable() }
             // 由于session保存在redis中，所以将spring security的session策略设置为无状态
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .authenticationManager(authenticationManager(authenticationConfiguration))
             // 配置请求授权
             .authorizeHttpRequests {
                 it

@@ -1,50 +1,49 @@
-package
+package {{module.package}}.{{lowerCase biz}}.controller
 
-{ { lowerCase module .package } }.{ { lowerCase biz } }.controller
-
-import {{lowerCase module.package}}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
-import {{lowerCase module.package}}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
-import {{lowerCase module.package}}.{{lowerCase biz}}.service.{{pascalCase biz}}Service
+import {{module.package}}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
+import {{module.package}}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
+import {{module.package}}.{{lowerCase biz}}.service.{{pascalCase biz}}Service
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.annotation.Resource
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "{{pascalCase biz}}")
 @RestController
 @RequestMapping("{{camelCase biz}}")
-class {
-    { pascalCase biz }
-}Controller {
+class {{pascalCase biz}}Controller {
 
     @Resource
-    private lateinit var { { camelCase biz } } Service : { { pascalCase biz } } Service
+    private lateinit var {{camelCase biz}}Service: {{pascalCase biz}}Service
 
-            @Parameter(name = "id", description = "{{comment}}ID", required = true)
-            @Operation(summary = "根据ID获取{{comment}}")
-            @GetMapping("getById")
-            fun getById(id: Long) = { { camelCase biz } } Service . getById (id)
+    @GetMapping("getById")
+    @Operation(summary = "根据ID获取{{comment}}")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:menu')")
+    fun getById(id: Long) = {{camelCase biz}}Service.getById(id)
 
-    @Operation(summary = "查询{{comment}}列表")
     @GetMapping("list")
-    fun list(queryDTO: {
-        { pascalCase biz }
-    }QueryDTO = { { pascalCase biz } } QueryDTO ()) = { { camelCase biz } } Service . list (queryDTO)
+    @Operation(summary = "查询{{comment}}列表")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:menu')")
+    fun list(queryDTO: {{pascalCase biz}}QueryDTO = {{pascalCase biz}}QueryDTO()) = {{camelCase biz}}Service.list(queryDTO)
 
-    @Operation(summary = "分页查询{{comment}}列表")
     @GetMapping("page")
-    fun page(queryDTO: {
-        { pascalCase biz }
-    }QueryDTO = { { pascalCase biz } } QueryDTO ()) = { { camelCase biz } } Service . page (queryDTO)
+    @Operation(summary = "分页查询{{comment}}列表")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:create')")
+    fun page(queryDTO: {{pascalCase biz}}QueryDTO = {{pascalCase biz}}QueryDTO()) = {{camelCase biz}}Service.page(queryDTO)
 
-    @Operation(summary = "保存{{comment}}")
     @PostMapping("save")
-    fun save(@RequestBody saveDTO: {
-        { pascalCase biz }
-    }SaveDTO) = { { camelCase biz } } Service . save (saveDTO)
+    @Operation(summary = "保存{{comment}}")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:update')")
+    fun save(@RequestBody saveDTO: {{pascalCase biz}}SaveDTO) = {{camelCase biz}}Service.save(saveDTO)
 
-    @Operation(summary = "根据ID删除{{comment}}")
     @GetMapping("deleteById")
-    fun deleteById(id: Long) = { { camelCase biz } } Service . deleteById (id)
+    @Operation(summary = "根据ID删除{{comment}}")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:delete')")
+    fun deleteById(id: Long) = {{camelCase biz}}Service.deleteById(id)
+
+    @GetMapping("export")
+    @Operation(summary = "导出{{comment}}")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:export')")
+    fun export(queryDTO: {{pascalCase biz}}QueryDTO = {{pascalCase biz}}QueryDTO()) = ""
 }

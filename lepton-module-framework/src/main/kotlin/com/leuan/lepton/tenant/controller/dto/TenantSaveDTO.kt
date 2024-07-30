@@ -1,12 +1,11 @@
 package com.leuan.lepton.tenant.controller.dto
 
-import com.leuan.lepton.syspackage.dal.SysPackage
-import com.leuan.lepton.tenant.enums.TenantTypeEnum
+import lombok.NoArgsConstructor
 
 /**
- * DTO for {@link com.leuan.lepton.tenant.dal.Tenant}
+ * DTO for {@link com.leuan.lepton.tenant.dal.Tenant }
  */
+@NoArgsConstructor
 data class TenantSaveDTO(
-    val id: Long? = null,
-    val name: String = "", val type: TenantTypeEnum = TenantTypeEnum.ACTIVE, val sysPackage: SysPackage? = null
+    val id: Long? = null
 )

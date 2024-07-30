@@ -1,11 +1,11 @@
 package com.leuan.lepton.syspackage.controller.dto
 
-import com.leuan.lepton.common.annotations.NoArgs
+import lombok.NoArgsConstructor
 
 /**
  * DTO for {@link com.leuan.lepton.syspackage.dal.SysPackage }
  */
-@NoArgs
+@NoArgsConstructor
 data class SysPackageSaveDTO(
     val id: Long? = null,
     val name: String = "",

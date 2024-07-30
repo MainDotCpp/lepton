@@ -3,12 +3,11 @@ package com.leuan.lepton.role.service
 import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
-import com.leuan.lepton.common.log.logInfo
-import com.leuan.lepton.common.utils.toJson
 import com.leuan.lepton.role.controller.dto.RoleQueryDTO
 import com.leuan.lepton.role.controller.dto.RoleSaveDTO
 import com.leuan.lepton.role.controller.vo.RoleVO
 import com.leuan.lepton.role.dal.QRole
+import com.leuan.lepton.role.dal.Role
 import com.leuan.lepton.role.dal.RoleRepository
 import com.leuan.lepton.role.mapping.RoleMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -16,7 +15,7 @@ import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
 
 /**
- * 系统角色服务
+ * 角色服务
  * @author yangyang
  * @date 2024/07/26
  * @constructor 创建[RoleService]
@@ -33,69 +32,75 @@ class RoleService {
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
 
+    private val qRole = QRole.role
+
     /**
-     * 通过id获取
+     * 通过id获取角色
      * @param [id] ID
      * @return [RoleVO]
      */
     fun getById(id: Long): RoleVO {
-        val entity = roleRepository.findById(id).orElseThrow { BizErr(BizErrEnum.ROLE_NOT_FOUND) }
-        return roleMapper.entityToVO(entity)
+        val entity = roleRepository
+            .findOne(qRole.id.eq(id))
+            .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        return roleMapper.toVO(entity)
     }
 
     /**
      * 构建表达式
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      */
     private fun buildExpressions(queryDTO: RoleQueryDTO) = arrayOf(
-        queryDTO.id?.let { QRole.role.id.eq(it) },
+        queryDTO.id?.let { qRole.id.eq(it) },
     )
 
     /**
      * 列表
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      * @return [List<RoleVO>]
      */
     fun list(queryDTO: RoleQueryDTO): List<RoleVO> {
         val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
-            .selectFrom(QRole.role)
+            .selectFrom(qRole)
             .where(*expressions)
             .fetch()
-            .map(roleMapper::entityToVO)
+            .map(roleMapper::toVO)
     }
 
     /**
-     * 页
-     * @param [queryDTO] 询问传输层对象
+     * 分页查询角色
+     * @param [queryDTO] 查询传输层对象
      * @return [PageDTO<RoleVO>]
      */
     fun page(queryDTO: RoleQueryDTO): PageDTO<RoleVO> {
         val pageDTO = PageDTO<RoleVO>(queryDTO)
         val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
-            .selectFrom(QRole.role)
+            .selectFrom(qRole)
             .where(*expressions)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(QRole.role.id.count()).from(QRole.role).where(*expressions).fetchOne() ?: 0
-        pageDTO.records = query.fetch().map(roleMapper::entityToVO)
+            jpaQueryFactory.select(qRole.id.count()).from(qRole).where(*expressions)
+                .fetchOne()!!
+        pageDTO.records = query.fetch().map(roleMapper::toVO)
         return pageDTO
     }
 
     /**
      * 保存
-     * @param [roleSaveDTO] 系统角色保存传输层对象
+     * @param [roleSaveDTO] 角色保存传输层对象
      * @return [RoleVO]
      */
     fun save(roleSaveDTO: RoleSaveDTO): RoleVO {
         val entity = roleSaveDTO.id?.let {
-            roleRepository.findById(it).orElseThrow { BizErr(BizErrEnum.ROLE_NOT_FOUND) }
-        } ?: roleMapper.saveDtoToEntity(roleSaveDTO)
+            roleRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        } ?: Role()
+
+        roleMapper.partialUpdate(roleSaveDTO, entity)
         roleRepository.save(entity)
-        logInfo("保存系统角色成功|${entity.toJson()}")
-        return roleMapper.entityToVO(entity)
+        return roleMapper.toVO(entity)
     }
 
     /**
@@ -104,7 +109,6 @@ class RoleService {
      * @return [Boolean]
      */
     fun deleteById(id: Long): Boolean {
-        logInfo("删除系统角色|ID：$id")
         roleRepository.deleteById(id)
         return true
     }

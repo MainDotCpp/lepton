@@ -3,7 +3,6 @@ package com.leuan.lepton.syspackage.service
 import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
-import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.syspackage.controller.dto.SysPackageQueryDTO
 import com.leuan.lepton.syspackage.controller.dto.SysPackageSaveDTO
 import com.leuan.lepton.syspackage.controller.vo.SysPackageVO
@@ -33,55 +32,59 @@ class SysPackageService {
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
 
+    private val qSysPackage = QSysPackage.sysPackage
+
     /**
-     * 通过id获取
+     * 通过id获取套餐
      * @param [id] ID
      * @return [SysPackageVO]
      */
     fun getById(id: Long): SysPackageVO {
-        val entity = sysPackageRepository.findById(id).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
-        return sysPackageMapper.entityToVO(entity)
+        val entity = sysPackageRepository
+            .findOne(qSysPackage.id.eq(id))
+            .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        return sysPackageMapper.toVO(entity)
     }
 
     /**
      * 构建表达式
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      */
     private fun buildExpressions(queryDTO: SysPackageQueryDTO) = arrayOf(
-        queryDTO.id?.let { QSysPackage.sysPackage.id.eq(it) },
+        queryDTO.id?.let { qSysPackage.id.eq(it) },
     )
 
     /**
      * 列表
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      * @return [List<SysPackageVO>]
      */
     fun list(queryDTO: SysPackageQueryDTO): List<SysPackageVO> {
         val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
-            .selectFrom(QSysPackage.sysPackage)
+            .selectFrom(qSysPackage)
             .where(*expressions)
             .fetch()
-            .map(sysPackageMapper::entityToVO)
+            .map(sysPackageMapper::toVO)
     }
 
     /**
-     * 页
-     * @param [queryDTO] 询问传输层对象
+     * 分页查询套餐
+     * @param [queryDTO] 查询传输层对象
      * @return [PageDTO<SysPackageVO>]
      */
     fun page(queryDTO: SysPackageQueryDTO): PageDTO<SysPackageVO> {
         val pageDTO = PageDTO<SysPackageVO>(queryDTO)
         val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
-            .selectFrom(QSysPackage.sysPackage)
+            .selectFrom(qSysPackage)
             .where(*expressions)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(QSysPackage.sysPackage.id.count()).from(QSysPackage.sysPackage).where(*expressions)
-                .fetchOne() ?: 0
-        pageDTO.records = query.fetch().map(sysPackageMapper::entityToVO)
+            jpaQueryFactory.select(qSysPackage.id.count()).from(qSysPackage).where(*expressions)
+                .fetchOne()!!
+        pageDTO.records = query.fetch().map(sysPackageMapper::toVO)
         return pageDTO
     }
 
@@ -97,7 +100,7 @@ class SysPackageService {
 
         sysPackageMapper.partialUpdate(sysPackageSaveDTO, entity)
         sysPackageRepository.save(entity)
-        return sysPackageMapper.entityToVO(entity)
+        return sysPackageMapper.toVO(entity)
     }
 
     /**
@@ -106,7 +109,6 @@ class SysPackageService {
      * @return [Boolean]
      */
     fun deleteById(id: Long): Boolean {
-        logInfo("删除系统套餐|ID：$id")
         sysPackageRepository.deleteById(id)
         return true
     }

@@ -4,9 +4,9 @@ import com.leuan.lepton.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.tenant.controller.dto.TenantSaveDTO
 import com.leuan.lepton.tenant.service.TenantService
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.annotation.Resource
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "Tenant")
@@ -17,24 +17,33 @@ class TenantController {
     @Resource
     private lateinit var tenantService: TenantService
 
-    @Parameter(name = "id", description = "租户ID", required = true)
-    @Operation(summary = "根据ID获取租户")
     @GetMapping("getById")
+    @Operation(summary = "根据ID获取租户")
+    @PreAuthorize("hasAnyAuthority('system:tenant:menu')")
     fun getById(id: Long) = tenantService.getById(id)
 
-    @Operation(summary = "查询租户列表")
     @GetMapping("list")
+    @Operation(summary = "查询租户列表")
+    @PreAuthorize("hasAnyAuthority('system:tenant:menu')")
     fun list(queryDTO: TenantQueryDTO = TenantQueryDTO()) = tenantService.list(queryDTO)
 
-    @Operation(summary = "分页查询租户列表")
     @GetMapping("page")
+    @Operation(summary = "分页查询租户列表")
+    @PreAuthorize("hasAnyAuthority('system:tenant:create')")
     fun page(queryDTO: TenantQueryDTO = TenantQueryDTO()) = tenantService.page(queryDTO)
 
-    @Operation(summary = "保存租户")
     @PostMapping("save")
+    @Operation(summary = "保存租户")
+    @PreAuthorize("hasAnyAuthority('system:tenant:update')")
     fun save(@RequestBody saveDTO: TenantSaveDTO) = tenantService.save(saveDTO)
 
-    @Operation(summary = "根据ID删除租户")
     @GetMapping("deleteById")
+    @Operation(summary = "根据ID删除租户")
+    @PreAuthorize("hasAnyAuthority('system:tenant:delete')")
     fun deleteById(id: Long) = tenantService.deleteById(id)
+
+    @GetMapping("export")
+    @Operation(summary = "导出租户")
+    @PreAuthorize("hasAnyAuthority('system:tenant:export')")
+    fun export(queryDTO: TenantQueryDTO = TenantQueryDTO()) = ""
 }

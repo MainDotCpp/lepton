@@ -1,8 +1,11 @@
 package com.leuan.lepton.common.aspect
 
+import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.HttpResult
 import com.leuan.lepton.common.http.fail
+import com.leuan.lepton.common.log.logError
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
@@ -12,20 +15,32 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(value = [BizErr::class])
     fun handleBizErr(e: BizErr): HttpResult<Any?> {
-        e.printStackTrace()
+        logError(e)
         return fail(e.code, e.message)
     }
 
     @ExceptionHandler(value = [NoResourceFoundException::class])
     fun handleNoResourceFoundException(e: NoResourceFoundException): HttpResult<Any?> {
-        e.printStackTrace()
-        return fail(404, e.message ?: "未找到资源")
+        logError(e)
+        return fail(BizErr(BizErrEnum.RESOURCE_NOT_FOUND))
+    }
+
+    @ExceptionHandler(value = [IllegalArgumentException::class])
+    fun handleIllegalArgumentException(e: IllegalArgumentException): HttpResult<Any?> {
+        logError(e)
+        return fail(BizErr(BizErrEnum.INVALID_PARAM))
+    }
+
+    @ExceptionHandler(value = [AuthorizationDeniedException::class])
+    fun handleAuthorizationDeniedException(e: AuthorizationDeniedException): HttpResult<Any?> {
+        logError(e)
+        return fail(BizErr(BizErrEnum.ACCESS_DENIED))
     }
 
     @ExceptionHandler(value = [Exception::class])
     fun handleException(e: Exception): HttpResult<Any?> {
-        e.printStackTrace()
-        return fail(500, e.message ?: "未知错误")
+        logError(e)
+        return fail(BizErr(BizErrEnum.BIZ))
     }
 
 }

@@ -37,22 +37,22 @@ export default function Plopfile(plop) {
                 console.log(`plop ${data.module} ${data.biz} ${data.comment}`)
                 data.module = moduleMapping[data.module]
                 return [
-                    // {
-                    //     type: 'addMany',
-                    //     base: '_templates/service',
-                    //     destination: '{{module.module}}/{{lowerCase module.dir}}',
-                    //     force: true,
-                    //     templateFiles: '_templates/service',
-                    //     data: {
-                    //         basePackage: 'com.leuan.lepton',
-                    //     }
-                    // },
                     {
-                        type: 'append',
-                        templateFile: '_templates/permission.sql.hbs',
-                        unique: false,
-                        path: 'gen/permission.sql'
+                        type: 'addMany',
+                        base: '_templates/service',
+                        destination: 'gen/{{module.module}}/{{lowerCase module.dir}}',
+                        force: true,
+                        templateFiles: '_templates/service',
+                        data: {
+                            basePackage: 'com.leuan.lepton',
+                        }
                     },
+                    // {
+                    //     type: 'append',
+                    //     templateFile: '_templates/permission.sql.hbs',
+                    //     unique: false,
+                    //     path: 'gen/permission.sql'
+                    // },
                 ]
             }
         }

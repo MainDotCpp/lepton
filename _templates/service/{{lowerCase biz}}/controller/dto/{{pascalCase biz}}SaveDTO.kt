@@ -1,15 +1,11 @@
-package
+package {{module.package}}.{{lowerCase biz}}.controller.dto
 
-{ { lowerCase module .package } }.{ { lowerCase biz } }.controller.dto
-
-import com.leuan.lepton.common.annotations.NoArgs
+import lombok.NoArgsConstructor
 
 /**
- * DTO for {@link {{lowerCase module.package}}.{{lowerCase biz}}.dal.{{pascalCase biz}} }
+ * DTO for {@link {{module.package}}.{{lowerCase biz}}.dal.{{pascalCase biz}} }
  */
-@NoArgs
-data class {
-    { pascalCase biz }
-}SaveDTO(
-val id: Long? = null,
+@NoArgsConstructor
+data class {{pascalCase biz}}SaveDTO(
+    val id: Long? = null
 )
