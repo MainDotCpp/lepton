@@ -1,5 +1,6 @@
 package com.leuan.lepton.user.mapping
 
+import com.leuan.lepton.common.mapping.LeptonBaseMapping
 import com.leuan.lepton.role.dal.Role
 import com.leuan.lepton.tenant.dal.Tenant
 import com.leuan.lepton.user.controller.dto.UserSaveDTO
@@ -8,15 +9,21 @@ import com.leuan.lepton.user.controller.vo.UserVO
 import com.leuan.lepton.user.dal.User
 import org.mapstruct.*
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = [LeptonBaseMapping::class]
+)
 abstract class UserMapper {
     abstract fun toEntity(userVO: UserVO): User
-    abstract fun entityToVO(user: User): UserVO
+    abstract fun toVO(user: User): UserVO
 
+    @InheritConfiguration
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    abstract fun partialUpdate(userVO: UserVO, @MappingTarget user: User): User
-
-    abstract fun saveDtoToEntity(userSaveDTO: UserSaveDTO): User
+    abstract fun partialUpdate(saveDTO: UserSaveDTO, @MappingTarget user: User): User
+    fun idToEntity(id: Long?): User? {
+        return id?.let { User().apply { this.id = it } }
+    }
 
     @Mappings(
         Mapping(target = "tenants", expression = "java(tenantsToTenantIds(user.getTenants()))"),

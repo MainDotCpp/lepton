@@ -4,10 +4,9 @@ import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
-import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.getThreadContext
 import com.leuan.lepton.common.utils.cache
-import com.leuan.lepton.common.utils.toJson
+import com.leuan.lepton.common.utils.redissonClient
 import com.leuan.lepton.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.user.controller.vo.UserInfoVO
@@ -18,11 +17,10 @@ import com.leuan.lepton.user.dal.UserRepository
 import com.leuan.lepton.user.mapping.UserMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
-import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Service
 
 /**
- * 系统用户服务
+ * 用户服务
  * @author yangyang
  * @date 2024/07/26
  * @constructor 创建[UserService]
@@ -39,73 +37,75 @@ class UserService {
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
 
-    @Resource
-    private lateinit var redissonClient: RedissonClient
+    private val qUser = QUser.user
 
     /**
-     * 通过id获取
+     * 通过id获取用户
      * @param [id] ID
      * @return [UserVO]
      */
     fun getById(id: Long): UserVO {
-        val entity = userRepository.findById(id).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
-        return userMapper.entityToVO(entity)
+        val entity = userRepository
+            .findOne(qUser.id.eq(id))
+            .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        return userMapper.toVO(entity)
     }
 
     /**
      * 构建表达式
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      */
     private fun buildExpressions(queryDTO: UserQueryDTO) = arrayOf(
-        queryDTO.id?.let { QUser.user.id.eq(it) },
+        queryDTO.id?.let { qUser.id.eq(it) },
     )
 
     /**
      * 列表
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      * @return [List<UserVO>]
      */
     fun list(queryDTO: UserQueryDTO): List<UserVO> {
-        logInfo("查询系统用户列表|${queryDTO.toJson()}")
         val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
-            .selectFrom(QUser.user)
+            .selectFrom(qUser)
             .where(*expressions)
             .fetch()
-            .map(userMapper::entityToVO)
+            .map(userMapper::toVO)
     }
 
     /**
-     * 页
-     * @param [queryDTO] 询问传输层对象
+     * 分页查询用户
+     * @param [queryDTO] 查询传输层对象
      * @return [PageDTO<UserVO>]
      */
     fun page(queryDTO: UserQueryDTO): PageDTO<UserVO> {
         val pageDTO = PageDTO<UserVO>(queryDTO)
         val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
-            .selectFrom(QUser.user)
+            .selectFrom(qUser)
             .where(*expressions)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(QUser.user.id.count()).from(QUser.user).where(*expressions).fetchOne() ?: 0
-        pageDTO.records = query.fetch().map(userMapper::entityToVO)
+            jpaQueryFactory.select(qUser.id.count()).from(qUser).where(*expressions)
+                .fetchOne()!!
+        pageDTO.records = query.fetch().map(userMapper::toVO)
         return pageDTO
     }
 
     /**
      * 保存
-     * @param [userSaveDTO] 系统用户保存传输层对象
+     * @param [userSaveDTO] 用户保存传输层对象
      * @return [UserVO]
      */
     fun save(userSaveDTO: UserSaveDTO): UserVO {
         val entity = userSaveDTO.id?.let {
-            userRepository.findById(it).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
-        } ?: userMapper.saveDtoToEntity(userSaveDTO)
+            userRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        } ?: User()
+
+        userMapper.partialUpdate(userSaveDTO, entity)
         userRepository.save(entity)
-        logInfo("保存系统用户成功|${entity.toJson()}")
-        return userMapper.entityToVO(entity)
+        return userMapper.toVO(entity)
     }
 
     /**
@@ -114,7 +114,6 @@ class UserService {
      * @return [Boolean]
      */
     fun deleteById(id: Long): Boolean {
-        logInfo("删除系统用户|ID：$id")
         userRepository.deleteById(id)
         return true
     }
@@ -147,7 +146,6 @@ class UserService {
                 .set(userInfo)
             userInfo
         }
-
 
 
 }

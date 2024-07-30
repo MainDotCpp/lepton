@@ -12,6 +12,7 @@ import com.leuan.lepton.common.utils.toJson
 import com.leuan.lepton.menu.controller.dto.MenuQueryDTO
 import com.leuan.lepton.menu.controller.dto.MenuSaveDTO
 import com.leuan.lepton.menu.controller.vo.MenuVO
+import com.leuan.lepton.menu.dal.Menu
 import com.leuan.lepton.menu.dal.MenuRepository
 import com.leuan.lepton.menu.dal.QMenu
 import com.leuan.lepton.menu.enums.MenuTypeEnum
@@ -21,7 +22,7 @@ import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
 
 /**
- * 系统菜单服务
+ * 菜单服务
  * @author yangyang
  * @date 2024/07/26
  * @constructor 创建[MenuService]
@@ -38,69 +39,75 @@ class MenuService {
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
 
+    private val qMenu = QMenu.menu
+
     /**
-     * 通过id获取
+     * 通过id获取菜单
      * @param [id] ID
      * @return [MenuVO]
      */
     fun getById(id: Long): MenuVO {
-        val entity = menuRepository.findById(id).orElseThrow { BizErr(BizErrEnum.MENU_NOT_FOUND) }
-        return menuMapper.entityToVO(entity)
+        val entity = menuRepository
+            .findOne(qMenu.id.eq(id))
+            .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        return menuMapper.toVO(entity)
     }
 
     /**
      * 构建表达式
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      */
     private fun buildExpressions(queryDTO: MenuQueryDTO) = arrayOf(
-        queryDTO.id?.let { QMenu.menu.id.eq(it) },
+        queryDTO.id?.let { qMenu.id.eq(it) },
     )
 
     /**
      * 列表
-     * @param [queryDTO] 询问传输层对象
+     * @param [queryDTO] 查询传输层对象
      * @return [List<MenuVO>]
      */
     fun list(queryDTO: MenuQueryDTO): List<MenuVO> {
         val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
-            .selectFrom(QMenu.menu)
+            .selectFrom(qMenu)
             .where(*expressions)
             .fetch()
-            .map(menuMapper::entityToVO)
+            .map(menuMapper::toVO)
     }
 
     /**
-     * 页
-     * @param [queryDTO] 询问传输层对象
+     * 分页查询菜单
+     * @param [queryDTO] 查询传输层对象
      * @return [PageDTO<MenuVO>]
      */
     fun page(queryDTO: MenuQueryDTO): PageDTO<MenuVO> {
         val pageDTO = PageDTO<MenuVO>(queryDTO)
         val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
-            .selectFrom(QMenu.menu)
+            .selectFrom(qMenu)
             .where(*expressions)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(QMenu.menu.id.count()).from(QMenu.menu).where(*expressions).fetchOne() ?: 0
-        pageDTO.records = query.fetch().map(menuMapper::entityToVO)
+            jpaQueryFactory.select(qMenu.id.count()).from(qMenu).where(*expressions)
+                .fetchOne()!!
+        pageDTO.records = query.fetch().map(menuMapper::toVO)
         return pageDTO
     }
 
     /**
      * 保存
-     * @param [menuSaveDTO] 系统菜单保存传输层对象
+     * @param [menuSaveDTO] 菜单保存传输层对象
      * @return [MenuVO]
      */
     fun save(menuSaveDTO: MenuSaveDTO): MenuVO {
         val entity = menuSaveDTO.id?.let {
-            menuRepository.findById(it).orElseThrow { BizErr(BizErrEnum.MENU_NOT_FOUND) }
-        } ?: menuMapper.saveDtoToEntity(menuSaveDTO)
+            menuRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        } ?: Menu()
+
+        menuMapper.partialUpdate(menuSaveDTO, entity)
         menuRepository.save(entity)
-        logInfo("保存系统菜单成功|${entity.toJson()}")
-        return menuMapper.entityToVO(entity)
+        return menuMapper.toVO(entity)
     }
 
     /**
@@ -109,7 +116,6 @@ class MenuService {
      * @return [Boolean]
      */
     fun deleteById(id: Long): Boolean {
-        logInfo("删除系统菜单|ID：$id")
         menuRepository.deleteById(id)
         return true
     }
