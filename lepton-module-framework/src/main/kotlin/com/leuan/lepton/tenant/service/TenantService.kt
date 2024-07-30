@@ -1,9 +1,9 @@
 package com.leuan.lepton.tenant.service
 
+import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
-import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.tenant.controller.dto.TenantSaveDTO
 import com.leuan.lepton.tenant.controller.vo.TenantVO
@@ -91,7 +91,9 @@ class TenantService {
      * @return [TenantVO]
      */
     fun save(tenantSaveDTO: TenantSaveDTO): TenantVO {
-        val entity = tenantSaveDTO.id?.let { tenantRepository.findById(it).orElseThrow { BizErr(BizErrEnum.TENANT_NOT_FOUND) } } ?: Tenant()
+        val entity =
+            tenantSaveDTO.id?.let { tenantRepository.findById(it).orElseThrow { BizErr(BizErrEnum.TENANT_NOT_FOUND) } }
+                ?: Tenant()
         tenantMapper.partialUpdate(tenantSaveDTO, entity)
         logInfo("保存租户|ID：${entity.id}")
         return tenantMapper.entityToVO(tenantRepository.save(entity))

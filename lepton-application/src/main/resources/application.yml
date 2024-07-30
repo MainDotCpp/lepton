@@ -9,6 +9,8 @@ server:
       force: true
 
 spring:
+  profiles:
+    active: dev
   application:
     name: lepton
   data:
@@ -36,6 +38,13 @@ spring:
       redis:
         repositories:
           enabled: false
+  jpa:
+    properties:
+      hibernate:
+        multiTenancy: SCHEMA
+        tenant_identifier_resolver: com.leuan.lepton.common.dal.HibernateTenantResolver
+        enable_lazy_load_no_trans: true
+
 
 --- #################### 接口文档配置 ####################
 springdoc:
@@ -59,5 +68,8 @@ lepton:
   ignore-tenant-table:
     - sys_user
     - sys_tenant
+  ignore-tenant-url:
+    - /auth/login
+    - /auth/logout
   auth:
     token-expire-days: 3

@@ -22,11 +22,14 @@ class User : BaseAuditEntity() {
     @Column(name = "password", nullable = false)
     var password: String = ""
 
+    @Transient
+    override var tenantId: Long = 0
+
     @ManyToMany
     @JoinTable(
         name = "sys_user_tenant",
         joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "tenant_id")]
+        inverseJoinColumns = [JoinColumn(name = "tenant_id")],
     )
     var tenants: MutableSet<Tenant> = mutableSetOf()
 

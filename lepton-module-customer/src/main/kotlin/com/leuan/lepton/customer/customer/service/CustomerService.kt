@@ -1,19 +1,19 @@
 package com.leuan.lepton.customer.customer.service
 
-import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.utils.toJson
-import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.customer.customer.controller.dto.CustomerQueryDTO
 import com.leuan.lepton.customer.customer.controller.dto.CustomerSaveDTO
 import com.leuan.lepton.customer.customer.controller.vo.CustomerVO
-import com.leuan.lepton.customer.customer.dal.QCustomer
 import com.leuan.lepton.customer.customer.dal.CustomerRepository
+import com.leuan.lepton.customer.customer.dal.QCustomer
 import com.leuan.lepton.customer.customer.mapping.CustomerMapper
+import com.leuan.lepton.user.dal.QUser
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * 客资服务
@@ -39,8 +39,9 @@ class CustomerService {
      * @return [CustomerVO]
      */
     fun getById(id: Long): CustomerVO {
-        val entity = customerRepository.findById(id).orElseThrow { BizErr(BizErrEnum.CUSTOMER_NOT_FOUND) }
-        return customerMapper.entityToVO(entity)
+        val customer = customerRepository.findOne(QCustomer.customer.id.eq(id)).get()
+        logInfo(customer.createdBy?.name ?: "cc")
+        return customerMapper.toVO(customer)
     }
 
     /**
@@ -56,13 +57,16 @@ class CustomerService {
      * @param [queryDTO] 询问传输层对象
      * @return [List<CustomerVO>]
      */
+    @Transactional(readOnly = true)
     fun list(queryDTO: CustomerQueryDTO): List<CustomerVO> {
         val expressions = buildExpressions(queryDTO)
-        return jpaQueryFactory
+        val res = jpaQueryFactory
             .selectFrom(QCustomer.customer)
+            .leftJoin(QUser.user).on(QCustomer.customer.createdBy.eq(QUser.user)).fetchJoin()
             .where(*expressions)
             .fetch()
-            .map(customerMapper::entityToVO)
+        logInfo("获取客资列表|查询条件：${queryDTO.toJson()}|结果：${res}")
+        return res.map(customerMapper::toVO)
     }
 
     /**
@@ -79,8 +83,9 @@ class CustomerService {
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(QCustomer.customer.id.count()).from(QCustomer.customer).where(*expressions).fetchOne() ?: 0
-        pageDTO.records = query.fetch().map(customerMapper::entityToVO)
+            jpaQueryFactory.select(QCustomer.customer.id.count()).from(QCustomer.customer).where(*expressions)
+                .fetchOne() ?: 0
+        pageDTO.records = query.fetch().map(customerMapper::toVO)
         return pageDTO
     }
 
@@ -91,11 +96,11 @@ class CustomerService {
      */
     fun save(customerSaveDTO: CustomerSaveDTO): CustomerVO {
         val entity = customerSaveDTO.id?.let {
-            customerRepository.findById(it).orElseThrow { BizErr(BizErrEnum.CUSTOMER_NOT_FOUND) }
+            customerRepository.findById(it).orElseThrow()
         } ?: customerMapper.saveDtoToEntity(customerSaveDTO)
         customerRepository.save(entity)
         logInfo("保存客资成功|${entity.toJson()}")
-        return customerMapper.entityToVO(entity)
+        return customerMapper.toVO(entity)
     }
 
     /**

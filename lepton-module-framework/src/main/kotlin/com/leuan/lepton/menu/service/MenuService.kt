@@ -4,22 +4,20 @@ import cn.hutool.core.lang.tree.Tree
 import cn.hutool.core.lang.tree.TreeNode
 import cn.hutool.core.lang.tree.TreeNodeConfig
 import cn.hutool.core.lang.tree.TreeUtil
-import cn.hutool.core.lang.tree.parser.NodeParser
+import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.utils.toJson
-import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.menu.controller.dto.MenuQueryDTO
 import com.leuan.lepton.menu.controller.dto.MenuSaveDTO
 import com.leuan.lepton.menu.controller.vo.MenuVO
-import com.leuan.lepton.menu.dal.QMenu
 import com.leuan.lepton.menu.dal.MenuRepository
+import com.leuan.lepton.menu.dal.QMenu
 import com.leuan.lepton.menu.enums.MenuTypeEnum
 import com.leuan.lepton.menu.mapping.MenuMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
-import org.springframework.data.jpa.repository.query.JpaQueryExecution
 import org.springframework.stereotype.Service
 
 /**
@@ -120,8 +118,10 @@ class MenuService {
         val menus = jpaQueryFactory.selectFrom(QMenu.menu)
             .where(
                 QMenu.menu.type.ne(MenuTypeEnum.BUTTON),
-                QMenu.menu.hidden.eq(false)
-            ).fetch()
+                QMenu.menu.hidden.eq(false),
+            )
+            .orderBy(QMenu.menu.id.asc())
+            .fetch()
 
         val config = TreeNodeConfig()
         config.weightKey = "sort"

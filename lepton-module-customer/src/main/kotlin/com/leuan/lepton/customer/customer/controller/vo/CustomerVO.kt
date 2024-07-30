@@ -1,12 +1,17 @@
 package com.leuan.lepton.customer.customer.controller.vo
 
+import lombok.NoArgsConstructor
 import java.io.Serializable
 import java.util.*
 
-/**
- * DTO for {@link com.leuan.lepton.customer.customer.dal.Customer }
- */
+@NoArgsConstructor
 data class CustomerVO(
-    var id: Long? = null,
-    var name: String = "", var createdAt: Date = Date(), var updatedBy: Long = 0, var phone: String? = null, var wx: String? = null
+    var id: Long?,
+    var name: String,
+    var createdAt: Date,
+    var updatedBy: Long?,
+    var phone: String?,
+    var wx: String?,
+    var createdById: Long?,
+    var createdByName: String?
 ) : Serializable

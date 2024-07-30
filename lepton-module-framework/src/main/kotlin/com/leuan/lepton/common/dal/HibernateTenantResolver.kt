@@ -1,15 +1,20 @@
 package com.leuan.lepton.common.dal
 
+import com.leuan.lepton.common.log.logDebug
 import com.leuan.lepton.common.thread.getThreadContext
-import org.hibernate.annotations.Comment
-import org.hibernate.boot.beanvalidation.HibernateTraversableResolver
 import org.hibernate.cfg.AvailableSettings
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 import org.springframework.stereotype.Component
 
 @Component
-class PartitionedTenantIdentifierResolver : CurrentTenantIdentifierResolver<Long>, HibernatePropertiesCustomizer {
+class HibernateTenantResolver : CurrentTenantIdentifierResolver<Long>, HibernatePropertiesCustomizer {
+
+    override fun isRoot(tenantId: Long?): Boolean {
+        logDebug("是否忽略租户: ${getThreadContext().ignoreTenantId}")
+        return getThreadContext().ignoreTenantId
+    }
+
     override fun resolveCurrentTenantIdentifier(): Long {
         return getThreadContext().tenantId
     }
@@ -19,6 +24,6 @@ class PartitionedTenantIdentifierResolver : CurrentTenantIdentifierResolver<Long
     }
 
     override fun customize(hibernateProperties: MutableMap<String, Any>?) {
-        hibernateProperties?.set(AvailableSettings.MULTI_TENANT_IDENTIFIER_RESOLVER, this)
+        hibernateProperties?.put(AvailableSettings.MULTI_TENANT_IDENTIFIER_RESOLVER, this)
     }
 }

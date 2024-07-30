@@ -1,6 +1,5 @@
 package com.leuan.lepton.tenant.controller.vo
 
-import com.leuan.lepton.common.annotations.NoArgs
 import com.leuan.lepton.tenant.enums.TenantTypeEnum
 import lombok.NoArgsConstructor
 import java.io.Serializable

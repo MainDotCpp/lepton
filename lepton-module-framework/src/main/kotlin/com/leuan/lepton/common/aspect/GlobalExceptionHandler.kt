@@ -21,6 +21,7 @@ class GlobalExceptionHandler {
         e.printStackTrace()
         return fail(404, e.message ?: "未找到资源")
     }
+
     @ExceptionHandler(value = [Exception::class])
     fun handleException(e: Exception): HttpResult<Any?> {
         e.printStackTrace()

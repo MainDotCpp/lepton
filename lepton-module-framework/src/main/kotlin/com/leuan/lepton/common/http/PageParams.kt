@@ -1,7 +1,5 @@
 package com.leuan.lepton.common.http
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 interface PageParams {
     var current: Long
     var pageSize: Long

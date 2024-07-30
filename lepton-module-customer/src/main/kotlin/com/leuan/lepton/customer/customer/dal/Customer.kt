@@ -23,5 +23,6 @@ class Customer(
 
     @Comment("微信号")
     @Column(name = "wx")
-    var wx: String?
-) : BaseAuditEntity()
+    var wx: String?,
+
+    ) : BaseAuditEntity()

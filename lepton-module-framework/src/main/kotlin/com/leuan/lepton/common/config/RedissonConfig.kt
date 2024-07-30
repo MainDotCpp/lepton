@@ -1,17 +1,9 @@
 package com.leuan.lepton.common.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.leuan.lepton.common.codec.JacksonJsonCodec
-import com.leuan.lepton.common.utils.objectMapper
 import jakarta.annotation.Resource
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
-import org.redisson.client.codec.Codec
 import org.redisson.client.codec.StringCodec
-import org.redisson.codec.JsonCodecWrapper
-import org.redisson.codec.JsonJacksonCodec
-import org.redisson.codec.SmileJacksonCodec
-import org.redisson.codec.TypedJsonJacksonCodec
 import org.redisson.config.Config
 import org.redisson.config.SingleServerConfig
 import org.springframework.context.annotation.Bean

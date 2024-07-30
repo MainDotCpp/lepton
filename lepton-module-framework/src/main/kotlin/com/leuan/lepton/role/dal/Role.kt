@@ -6,7 +6,6 @@ import jakarta.persistence.*
 import lombok.EqualsAndHashCode
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.Comment
-import org.hibernate.proxy.HibernateProxy
 
 @Comment("系统角色角色")
 @Entity

@@ -1,41 +1,57 @@
 package com.leuan.lepton.common.dal
 
+import com.leuan.lepton.user.dal.User
 import jakarta.persistence.*
-import org.hibernate.annotations.*
-import java.util.Date
+import lombok.NoArgsConstructor
+import org.hibernate.annotations.ColumnDefault
+import org.hibernate.annotations.Comment
+import org.hibernate.annotations.TenantId
+import org.springframework.data.annotation.CreatedBy
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedBy
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.util.*
 
 
+@EntityListeners(AuditingEntityListener::class, TenantEventListener::class)
+@NoArgsConstructor
 @MappedSuperclass
-@EntityListeners(TenantEventListener::class)
-open class BaseAuditEntity {
+class BaseAuditEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    open var id: Long = 0
+    var id: Long = 0,
 
     @Comment("创建人")
-    @ColumnDefault("0")
-    @Column(name = "created_by")
-    open var createdBy: Long = 0
+    @CreatedBy
+    @JoinColumn(name = "created_by")
+    @ManyToOne(fetch = FetchType.LAZY)
+    var createdBy: User? = null,
 
     @Comment("创建时间")
+    @CreatedDate
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
-    open var createdAt: Date = Date()
+    var createdAt: Date = Date(),
 
     @Comment("更新时间")
+    @LastModifiedDate
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at", nullable = false)
-    open var updatedAt: Date = Date()
+    var updatedAt: Date = Date(),
 
     @Comment("更新人")
-    @ColumnDefault("0")
-    @Column(name = "updated_by")
-    open var updatedBy: Long = 0
+    @LastModifiedBy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by")
+    var updatedBy: User? = null,
 
     @Comment("租户ID")
     @ColumnDefault("0")
     @Column(name = "tenant_id")
     @TenantId
-    open var tenantId: Long = 0
+    var tenantId: Long = 0,
+) {
+
 }

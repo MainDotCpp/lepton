@@ -70,7 +70,7 @@ class SecurityConfig {
             }
             // 添加自定义过滤器，放在UsernamePasswordAuthenticationFilter之前
             .addFilterBefore(
-                SecurityJwtFilter(leptonUserDetailService),
+                SecurityJwtFilter(leptonUserDetailService, leptonConfig),
                 UsernamePasswordAuthenticationFilter::class.java
             )
 

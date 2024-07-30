@@ -1,9 +1,7 @@
 package com.leuan.lepton.tenant.controller.dto
 
 import com.leuan.lepton.common.http.PageParams
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.SchemaProperty
 
 @Schema(description = "租户查询参数")
 data class TenantQueryDTO(

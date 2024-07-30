@@ -8,10 +8,11 @@ import com.leuan.lepton.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.common.constants.TOKEN_CACHE_PREFIX
 import com.leuan.lepton.common.constants.TOKEN_NAME
 import com.leuan.lepton.common.exception.BizErr
+import com.leuan.lepton.common.log.logDebug
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.ThreadContext
-import com.leuan.lepton.common.thread.clearThreadContext
 import com.leuan.lepton.common.thread.getThreadContext
+import com.leuan.lepton.common.thread.ignoreTenantId
 import com.leuan.lepton.common.thread.setThreadContext
 import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.service.UserService
@@ -55,7 +56,8 @@ class AuthService {
      * 登录
      * @param [loginDTO] 登录传输层对象
      */
-    fun login(loginDTO: LoginDTO): UserInfoVO {
+    fun login(loginDTO: LoginDTO): UserInfoVO = ignoreTenantId {
+        logDebug("用户登录：${loginDTO.phone} -> ${passwordEncoder.encode(loginDTO.password)}")
         // 判断用户名密码是否正确
         val user = userService.getUserByPhone(loginDTO.phone)
             ?: throw BizErr(BizErrEnum.PHONE_OR_PASSWORD_ERROR)
@@ -78,7 +80,7 @@ class AuthService {
         // 获取用户信息
         setThreadContext(ThreadContext(user.tenants.first().id ?: -1L, user.id, user.name, token))
         val userInfo = userService.getUserInfo(freshCache = true)
-        return userInfo
+        return@ignoreTenantId userInfo
     }
 
     fun logout(): Boolean {

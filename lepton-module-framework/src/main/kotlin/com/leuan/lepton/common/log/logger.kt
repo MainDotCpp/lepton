@@ -12,14 +12,14 @@ fun <T : Any> T.logError(e: Throwable) {
     logger().error("", e)
 }
 
-fun <T : Any> T.logError(msg: String) {
+fun <T : Any> T.logError(msg: String? = null) {
     logger().error(msg)
 }
 
-fun <T : Any> T.logInfo(msg: String) {
+fun <T : Any> T.logInfo(msg: String? = null) {
     logger().info(msg)
 }
 
-fun <T : Any> T.logDebug(msg: String) {
+fun <T : Any> T.logDebug(msg: String? = null) {
     logger().debug(msg)
 }

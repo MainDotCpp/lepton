@@ -1,13 +1,13 @@
 package com.leuan.lepton.user.service
 
+import com.leuan.lepton.common.constants.BizErrEnum
+import com.leuan.lepton.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.getThreadContext
 import com.leuan.lepton.common.utils.cache
 import com.leuan.lepton.common.utils.toJson
-import com.leuan.lepton.common.constants.BizErrEnum
-import com.leuan.lepton.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.user.controller.vo.UserInfoVO
@@ -130,6 +130,12 @@ class UserService {
             .fetchOne()
     }
 
+    /**
+     * 获取用户信息
+     * @param [id] ID
+     * @param [freshCache] 新鲜缓存
+     * @return [UserInfoVO]
+     */
     fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
         cache("session:${id}", fresh = freshCache) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
@@ -141,5 +147,7 @@ class UserService {
                 .set(userInfo)
             userInfo
         }
+
+
 
 }

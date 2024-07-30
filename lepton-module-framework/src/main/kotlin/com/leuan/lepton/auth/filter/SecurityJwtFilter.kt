@@ -2,26 +2,26 @@ package com.leuan.lepton.auth.filter
 
 import cn.hutool.jwt.JWTUtil
 import com.leuan.lepton.auth.service.LeptonUserDetailService
-import com.leuan.lepton.common.constants.BizErrEnum
+import com.leuan.lepton.common.config.LeptonConfig
 import com.leuan.lepton.common.constants.TOKEN_CACHE_PREFIX
 import com.leuan.lepton.common.constants.TOKEN_NAME
-import com.leuan.lepton.common.exception.BizErr
-import com.leuan.lepton.common.log.logInfo
+import com.leuan.lepton.common.log.logError
 import com.leuan.lepton.common.thread.ThreadContext
 import com.leuan.lepton.common.thread.clearThreadContext
 import com.leuan.lepton.common.thread.setThreadContext
 import com.leuan.lepton.common.utils.redissonClient
 import com.leuan.lepton.user.controller.vo.UserInfoVO
-import jakarta.annotation.Resource
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
 class SecurityJwtFilter(
-    private val leptonUserDetailService: LeptonUserDetailService
+    private val leptonUserDetailService: LeptonUserDetailService,
+    private val leptonConfig: LeptonConfig
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -52,11 +52,40 @@ class SecurityJwtFilter(
             get()
         }
 
+
+        // 初始化上下文
+        val context = ThreadContext(
+            userId = userId.toLong(),
+            username = "",
+            token = token,
+            tenantId = request.getHeader("tenant-id")?.toLong() ?: 0L
+        )
+        setThreadContext(context)
+
+        // 获取用户信息
         val userInfo = leptonUserDetailService.loadUserByUsername(userId) as UserInfoVO
+        context.username = userInfo.username
+
+
+        // 判断是否忽略租户id
+        context.ignoreTenantId =
+            leptonConfig.ignoreTenantUrl.any { pattern -> AntPathMatcher().match(pattern, request.requestURI) }
+
+        // 如果不是忽略租户id, 却又没有租户id, 直接返回
+        if (!context.ignoreTenantId && context.tenantId == 0L) {
+            logError("租户id为空")
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        if (context.tenantId != 0L && userInfo.tenants.none { it == context.tenantId }) {
+            logError("非法操作")
+            filterChain.doFilter(request, response)
+            return
+        }
+        // 校验流程全部通过, 设置用户信息到spring security上下文
         val authenticationToken = UsernamePasswordAuthenticationToken(userInfo, null, userInfo.authorities)
         SecurityContextHolder.getContext().authentication = authenticationToken
-
-        setThreadContext(ThreadContext(userInfo.tenants.first(), userInfo.id, userInfo.name, token))
         filterChain.doFilter(request, response)
         clearThreadContext()
     }

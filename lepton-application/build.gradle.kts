@@ -1,22 +1,23 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
-
-group = "com.leuan.lepton"
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(project(":lepton-module-customer"))
     implementation(project(":lepton-module-framework"))
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
+}
+
+
+
+tasks.bootJar {
+    this.archiveBaseName.set("lepton")
+    this.enabled = true
+    this.mainClass = "com.leuan.lepton.LeptonApplicationKt"
+}
+
+tasks.jar {
+    enabled = true
 }
 
 tasks.test {
     useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(17)
 }

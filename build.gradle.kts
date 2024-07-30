@@ -11,20 +11,9 @@ plugins {
     kotlin("plugin.noarg") version "2.0.0"
 }
 
-group = "com.leuan"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-}
-allprojects {
-    repositories {
-        mavenCentral()
-    }
 }
 
 kotlin {
@@ -35,11 +24,20 @@ kotlin {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:3.3.2")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.1.3")
     }
 }
 
 allprojects {
+    group = "com.leuan"
+    version = "1.0"
+
+    repositories {
+        maven {
+            url = uri("https://repo.maven.apache.org/maven2/")
+        }
+        mavenCentral()
+    }
     dependencies {
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
@@ -52,14 +50,14 @@ allprojects {
 
         // WEB
         implementation("org.springframework.boot:spring-boot-starter-web")
-        implementation("org.springframework.boot:spring-boot-starter-security:3.3.2")
+        implementation("org.springframework.boot:spring-boot-starter-security")
 
         // DB 相关
-        implementation("org.postgresql:postgresql:42.7.3")
+        implementation("org.postgresql:postgresql")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
         implementation(group = "com.querydsl", name = "querydsl-jpa", version = "5.1.0", classifier = "jakarta")
         kapt(group = "com.querydsl", name = "querydsl-apt", version = "5.1.0", classifier = "jakarta")
-        implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
 
         // 缓存
         implementation("org.redisson:redisson-spring-boot-starter:3.33.0")
@@ -97,19 +95,20 @@ allprojects {
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     }
-}
-subprojects {
+    tasks.test {
+        useJUnitPlatform()
+    }
+    tasks.jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
     tasks.bootJar {
         enabled = false
     }
 }
-tasks.bootJar {
-    enabled = false
-}
 
-tasks.test {
-    useJUnitPlatform()
-}
+
+
+
 kotlin {
     jvmToolchain(17)
 }

@@ -1,22 +1,21 @@
 package com.leuan.lepton.common.thread
 
-import com.leuan.lepton.common.annotations.NoArgs
-import com.leuan.lepton.common.log.logInfo
-import kotlin.concurrent.getOrSet
+import lombok.NoArgsConstructor
 
 
-@NoArgs
+@NoArgsConstructor
 data class ThreadContext(
     var tenantId: Long = -1L,
     var userId: Long,
     var username: String,
-    var token: String
+    var token: String,
+    var ignoreTenantId: Boolean = false
 )
 
 val threadLocal = ThreadLocal<ThreadContext>()
 
 fun getThreadContext(): ThreadContext {
-    return threadLocal.get() ?: ThreadContext(-1, -1, "", "")
+    return threadLocal.get() ?: ThreadContext(-1, -1, "", "", true)
 }
 
 fun setThreadContext(threadContext: ThreadContext) {
@@ -25,4 +24,12 @@ fun setThreadContext(threadContext: ThreadContext) {
 
 fun clearThreadContext() {
     threadLocal.remove()
+}
+
+fun <T> ignoreTenantId(block: () -> T): T {
+    val threadContext = getThreadContext()
+    threadContext.ignoreTenantId = true
+    val result = block()
+    threadContext.ignoreTenantId = false
+    return result
 }
