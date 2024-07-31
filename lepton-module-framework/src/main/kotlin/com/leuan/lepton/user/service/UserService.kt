@@ -136,7 +136,7 @@ class UserService {
      * @return [UserInfoVO]
      */
     fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
-        cache("session:${id}", fresh = freshCache) {
+        cache("session:${getThreadContext().tenantId}:${id}", fresh = freshCache) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
             val user = userRepository.findById(id).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
             val userInfo = userMapper.toDto(user)

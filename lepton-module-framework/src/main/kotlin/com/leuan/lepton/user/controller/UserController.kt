@@ -46,4 +46,8 @@ class UserController {
     @Operation(summary = "导出用户")
     @PreAuthorize("hasAnyAuthority('system:user:export')")
     fun export(queryDTO: UserQueryDTO = UserQueryDTO()) = ""
+
+    @GetMapping("userInfo")
+    @Operation(summary = "获取用户信息")
+    fun userInfo() = userService.getUserInfo()
 }

@@ -64,12 +64,9 @@ lepton:
   ignore-login-url:
     - /v3/api-docs
     - /auth/login
-    - /user/test
-  ignore-tenant-table:
-    - sys_user
-    - sys_tenant
   ignore-tenant-url:
     - /auth/login
     - /auth/logout
+    - /user/userInfo
   auth:
     token-expire-days: 3
