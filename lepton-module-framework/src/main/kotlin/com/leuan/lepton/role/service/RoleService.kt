@@ -3,6 +3,7 @@ package com.leuan.lepton.role.service
 import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
+import com.leuan.lepton.common.utils.buildExpressions
 import com.leuan.lepton.role.controller.dto.RoleQueryDTO
 import com.leuan.lepton.role.controller.dto.RoleSaveDTO
 import com.leuan.lepton.role.controller.vo.RoleVO
@@ -46,13 +47,6 @@ class RoleService {
         return roleMapper.toVO(entity)
     }
 
-    /**
-     * 构建表达式
-     * @param [queryDTO] 查询传输层对象
-     */
-    private fun buildExpressions(queryDTO: RoleQueryDTO) = arrayOf(
-        queryDTO.id?.let { qRole.id.eq(it) },
-    )
 
     /**
      * 列表
@@ -60,10 +54,9 @@ class RoleService {
      * @return [List<RoleVO>]
      */
     fun list(queryDTO: RoleQueryDTO): List<RoleVO> {
-        val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
             .selectFrom(qRole)
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .fetch()
             .map(roleMapper::toVO)
     }
@@ -75,14 +68,13 @@ class RoleService {
      */
     fun page(queryDTO: RoleQueryDTO): PageDTO<RoleVO> {
         val pageDTO = PageDTO<RoleVO>(queryDTO)
-        val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
             .selectFrom(qRole)
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(qRole.id.count()).from(qRole).where(*expressions)
+            jpaQueryFactory.select(qRole.id.count()).from(qRole).buildExpressions(queryDTO, sort = false)
                 .fetchOne()!!
         pageDTO.data = query.fetch().map(roleMapper::toVO)
         return pageDTO

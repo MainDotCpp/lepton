@@ -1,9 +1,10 @@
 package com.leuan.lepton.common.config
 
 
-import com.leuan.lepton.common.utils.objectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.Resource
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
@@ -12,9 +13,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 @EnableJpaAuditing
 @EnableAspectJAutoProxy
 @EnableConfigurationProperties
-class ApplicationConfig {
-
-    @Bean
-    fun objectMapper() = objectMapper
-
-}
+class ApplicationConfig {}

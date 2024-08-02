@@ -19,31 +19,31 @@ class SysPackageController {
 
     @GetMapping("getById")
     @Operation(summary = "根据ID获取系统套餐")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:menu')")
+    @PreAuthorize("hasAnyAuthority('system:syspackage:menu')")
     fun getById(id: Long) = sysPackageService.getById(id)
 
     @GetMapping("list")
     @Operation(summary = "查询系统套餐列表")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:menu')")
+    @PreAuthorize("hasAnyAuthority('system:syspackage:menu')")
     fun list(queryDTO: SysPackageQueryDTO = SysPackageQueryDTO()) = sysPackageService.list(queryDTO)
 
     @GetMapping("page")
     @Operation(summary = "分页查询系统套餐列表")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:create')")
+    @PreAuthorize("hasAnyAuthority('system:syspackage:create')")
     fun page(queryDTO: SysPackageQueryDTO = SysPackageQueryDTO()) = sysPackageService.page(queryDTO)
 
     @PostMapping("save")
     @Operation(summary = "保存系统套餐")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:update')")
+    @PreAuthorize("hasAnyAuthority('system:syspackage:update')")
     fun save(@RequestBody saveDTO: SysPackageSaveDTO) = sysPackageService.save(saveDTO)
 
     @GetMapping("deleteById")
     @Operation(summary = "根据ID删除系统套餐")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:delete')")
+    @PreAuthorize("hasAnyAuthority('system:syspackage:delete')")
     fun deleteById(id: Long) = sysPackageService.deleteById(id)
 
     @GetMapping("export")
     @Operation(summary = "导出系统套餐")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:export')")
+    @PreAuthorize("hasAnyAuthority('system:syspackage:export')")
     fun export(queryDTO: SysPackageQueryDTO = SysPackageQueryDTO()) = ""
 }

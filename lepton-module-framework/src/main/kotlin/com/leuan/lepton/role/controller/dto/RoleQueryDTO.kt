@@ -6,11 +6,4 @@ import lombok.NoArgsConstructor
 
 @NoArgsConstructor
 @Schema(description = "角色查询参数")
-class RoleQueryDTO(
-    @Schema(description = "角色ID")
-    val id: Long? = null,
-    @Schema(description = "当前页")
-    override var current: Long = 1,
-    @Schema(description = "每页大小")
-    override var pageSize: Long = 10
-) : BaseQueryDTO()
+class RoleQueryDTO() : BaseQueryDTO()

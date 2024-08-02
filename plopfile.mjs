@@ -3,13 +3,15 @@ const moduleMapping = {
         name: 'system',
         package: 'com.leuan.lepton',
         module: 'lepton-module-framework',
-        dir: 'src/main/kotlin/com/leuan/lepton'
+        dir: 'src/main/kotlin/com/leuan/lepton',
+        menuId: 1
     },
     customer: {
         name: 'customer',
         package: 'com.leuan.lepton.customer',
         module: 'lepton-module-customer',
-        dir: 'src/main/kotlin/com/leuan/lepton/customer'
+        dir: 'src/main/kotlin/com/leuan/lepton/customer',
+        menuId: 2
     }
 }
 export default function Plopfile(plop) {
@@ -37,22 +39,28 @@ export default function Plopfile(plop) {
                 console.log(`plop ${data.module} ${data.biz} ${data.comment}`)
                 data.module = moduleMapping[data.module]
                 return [
-                    {
-                        type: 'addMany',
-                        base: '_templates/service',
-                        destination: 'gen/{{module.module}}/{{lowerCase module.dir}}',
-                        force: true,
-                        templateFiles: '_templates/service',
-                        data: {
-                            basePackage: 'com.leuan.lepton',
-                        }
-                    },
                     // {
-                    //     type: 'append',
-                    //     templateFile: '_templates/permission.sql.hbs',
-                    //     unique: false,
-                    //     path: 'gen/permission.sql'
+                    //     type: 'addMany',
+                    //     base: '_templates/service',
+                    //     destination: 'gen/{{module.module}}/{{lowerCase module.dir}}',
+                    //     force: true,
+                    //     templateFiles: '_templates/service',
+                    //     data: {
+                    //         basePackage: 'com.leuan.lepton',
+                    //     }
                     // },
+                    {
+                        type: 'append',
+                        templateFile: '_templates/permission.sql.hbs',
+                        unique: false,
+                        path: 'gen/permission.sql'
+                    },
+                    {
+                        type: 'append',
+                        templateFile: '_templates/gen.log.hbs',
+                        unique: false,
+                        path: 'gen/gen.log'
+                    },
                 ]
             }
         }

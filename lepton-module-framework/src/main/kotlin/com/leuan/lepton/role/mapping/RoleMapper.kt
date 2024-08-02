@@ -12,7 +12,9 @@ import org.mapstruct.*
     uses = [LeptonBaseMapping::class]
 )
 abstract class RoleMapper {
+    @org.mapstruct.Mapping(source = "createdByName", target = "createdBy.name")
     abstract fun toEntity(roleVO: RoleVO): Role
+    @org.mapstruct.Mapping(source = "createdBy.name", target = "createdByName")
     abstract fun toVO(role: Role): RoleVO
 
     @InheritConfiguration
