@@ -2,6 +2,7 @@ package com.leuan.lepton.tenant.controller
 
 import com.leuan.lepton.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.tenant.controller.dto.TenantSaveDTO
+import com.leuan.lepton.tenant.controller.vo.TenantVO
 import com.leuan.lepton.tenant.service.TenantService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -25,12 +26,12 @@ class TenantController {
     @GetMapping("list")
     @Operation(summary = "查询租户列表")
     @PreAuthorize("hasAnyAuthority('system:tenant:menu')")
-    fun list(queryDTO: TenantQueryDTO = TenantQueryDTO()) = tenantService.list(queryDTO)
+    fun list(queryDTO: TenantQueryDTO): List<TenantVO> = tenantService.list(queryDTO)
 
     @GetMapping("page")
     @Operation(summary = "分页查询租户列表")
     @PreAuthorize("hasAnyAuthority('system:tenant:create')")
-    fun page(queryDTO: TenantQueryDTO = TenantQueryDTO()) = tenantService.page(queryDTO)
+    fun page(queryDTO: TenantQueryDTO) = tenantService.page(queryDTO)
 
     @PostMapping("save")
     @Operation(summary = "保存租户")
@@ -45,5 +46,5 @@ class TenantController {
     @GetMapping("export")
     @Operation(summary = "导出租户")
     @PreAuthorize("hasAnyAuthority('system:tenant:export')")
-    fun export(queryDTO: TenantQueryDTO = TenantQueryDTO()) = ""
+    fun export(queryDTO: TenantQueryDTO) = ""
 }

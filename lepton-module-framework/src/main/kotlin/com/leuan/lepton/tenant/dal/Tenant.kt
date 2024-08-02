@@ -14,6 +14,11 @@ class Tenant {
     @Column(name = "id", nullable = false)
     var id: Long? = null
 
+    @Comment("logo")
+    @ColumnDefault("''")
+    @Column(name = "logo", nullable = false)
+    var logo: String = ""
+
     @Comment("租户名称")
     @ColumnDefault("''")
     @Column(name = "name", nullable = false)
@@ -24,6 +29,11 @@ class Tenant {
     @ColumnDefault("'ACTIVE'")
     @Column(name = "type", nullable = false)
     var type: TenantTypeEnum = TenantTypeEnum.ACTIVE
+
+    @Comment("企业识别码")
+    @ColumnDefault("''")
+    @Column(name = "code", nullable = false, unique = true)
+    var code: String = ""
 
     @ManyToOne
     @JoinColumn(name = "sys_package_id")

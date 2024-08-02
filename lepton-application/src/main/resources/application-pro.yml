@@ -6,7 +6,7 @@ spring:
     password: lepton_admin
   jpa:
     hibernate:
-      ddl-auto: update
+#      ddl-auto: update
   data:
     redis:
       address: redis://43.136.92.103:6379

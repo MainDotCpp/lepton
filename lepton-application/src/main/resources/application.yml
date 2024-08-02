@@ -65,8 +65,6 @@ lepton:
     - /v3/api-docs
     - /auth/login
   ignore-tenant-url:
-    - /auth/login
-    - /auth/logout
     - /user/userInfo
   auth:
     token-expire-days: 3

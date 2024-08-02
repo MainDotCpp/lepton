@@ -6,7 +6,6 @@ import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.thread.getThreadContext
 import com.leuan.lepton.common.utils.cache
-import com.leuan.lepton.common.utils.redissonClient
 import com.leuan.lepton.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.user.controller.vo.UserInfoVO
@@ -89,7 +88,7 @@ class UserService {
         pageDTO.total =
             jpaQueryFactory.select(qUser.id.count()).from(qUser).where(*expressions)
                 .fetchOne()!!
-        pageDTO.records = query.fetch().map(userMapper::toVO)
+        pageDTO.data = query.fetch().map(userMapper::toVO)
         return pageDTO
     }
 
@@ -136,14 +135,10 @@ class UserService {
      * @return [UserInfoVO]
      */
     fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
-        cache("session:${getThreadContext().tenantId}:${id}", fresh = freshCache) {
+        cache("$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}", fresh = freshCache) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
-            val user = userRepository.findById(id).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
+            val user = userRepository.findOne(qUser.id.eq(id)).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
             val userInfo = userMapper.toDto(user)
-            val context = getThreadContext()
-            redissonClient
-                .getBucket<UserInfoVO>("$SESSION_CACHE_PREFIX:${context.userId}")
-                .set(userInfo)
             userInfo
         }
 

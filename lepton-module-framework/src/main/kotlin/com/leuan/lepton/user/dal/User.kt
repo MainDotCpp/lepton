@@ -1,6 +1,5 @@
 package com.leuan.lepton.user.dal
 
-import com.leuan.lepton.common.dal.BaseAuditEntity
 import com.leuan.lepton.role.dal.Role
 import com.leuan.lepton.tenant.dal.Tenant
 import jakarta.persistence.*
@@ -9,7 +8,13 @@ import org.hibernate.annotations.Comment
 @Comment("系统用户")
 @Entity
 @Table(name = "sys_user")
-class User : BaseAuditEntity() {
+class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    var id: Long = 0
+
     @Comment("姓名")
     @Column(name = "name")
     var name: String = ""
@@ -22,8 +27,6 @@ class User : BaseAuditEntity() {
     @Column(name = "password", nullable = false)
     var password: String = ""
 
-    @Transient
-    override var tenantId: Long = 0
 
     @ManyToMany
     @JoinTable(

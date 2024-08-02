@@ -84,7 +84,7 @@ class RoleService {
         pageDTO.total =
             jpaQueryFactory.select(qRole.id.count()).from(qRole).where(*expressions)
                 .fetchOne()!!
-        pageDTO.records = query.fetch().map(roleMapper::toVO)
+        pageDTO.data = query.fetch().map(roleMapper::toVO)
         return pageDTO
     }
 

@@ -8,19 +8,19 @@ object CacheUtils
 
 lateinit var redissonClient: RedissonClient
 
-inline fun <reified T> cache(key: String, ttl: Long? = null, fresh: Boolean = false, process: () -> T): T {
+inline fun <R : Any, reified T> R.cache(key: String, ttl: Long? = null, fresh: Boolean = false, process: () -> T): T {
     val bucket = redissonClient.getBucket<String>(key)
     val value = bucket.get()
     if (value != null && !fresh) {
         return value.fromJson<T>().also {
-            CacheUtils.logInfo("[Cache] GET $key -> $it")
+            logInfo("[Cache] GET $key -> $it")
         }
     }
     val result = process()
     result.toJson().also {
         bucket.set(it)
         ttl?.let { bucket.expire(Duration.ofSeconds(ttl)) }
-        CacheUtils.logInfo("[Cache] SET $key -> $it")
+        logInfo("[Cache] SET $key -> $it")
     }
     return result
 }

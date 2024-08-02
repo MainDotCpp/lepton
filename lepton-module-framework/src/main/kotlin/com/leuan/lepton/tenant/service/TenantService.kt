@@ -3,6 +3,9 @@ package com.leuan.lepton.tenant.service
 import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
+import com.leuan.lepton.common.log.logInfo
+import com.leuan.lepton.common.utils.buildExpressions
+import com.leuan.lepton.common.utils.toJson
 import com.leuan.lepton.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.tenant.controller.dto.TenantSaveDTO
 import com.leuan.lepton.tenant.controller.vo.TenantVO
@@ -50,9 +53,10 @@ class TenantService {
      * 构建表达式
      * @param [queryDTO] 查询传输层对象
      */
-    private fun buildExpressions(queryDTO: TenantQueryDTO) = arrayOf(
-        queryDTO.id?.let { qTenant.id.eq(it) },
+    private fun buildWhere(queryDTO: TenantQueryDTO) = arrayOf(
+        qTenant.id.`in`(queryDTO.id),
     )
+
 
     /**
      * 列表
@@ -60,10 +64,9 @@ class TenantService {
      * @return [List<TenantVO>]
      */
     fun list(queryDTO: TenantQueryDTO): List<TenantVO> {
-        val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
             .selectFrom(qTenant)
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .fetch()
             .map(tenantMapper::toVO)
     }
@@ -74,17 +77,17 @@ class TenantService {
      * @return [PageDTO<TenantVO>]
      */
     fun page(queryDTO: TenantQueryDTO): PageDTO<TenantVO> {
+        logInfo("分页查询租户 ${queryDTO.toJson()}")
         val pageDTO = PageDTO<TenantVO>(queryDTO)
-        val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
             .selectFrom(qTenant)
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(qTenant.id.count()).from(qTenant).where(*expressions)
+            jpaQueryFactory.select(qTenant.id.count()).from(qTenant).where(*buildWhere(queryDTO))
                 .fetchOne()!!
-        pageDTO.records = query.fetch().map(tenantMapper::toVO)
+        pageDTO.data = query.fetch().map(tenantMapper::toVO)
         return pageDTO
     }
 

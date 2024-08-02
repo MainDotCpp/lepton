@@ -12,7 +12,6 @@ import com.leuan.lepton.common.log.logDebug
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.ThreadContext
 import com.leuan.lepton.common.thread.getThreadContext
-import com.leuan.lepton.common.thread.ignoreTenantId
 import com.leuan.lepton.common.thread.setThreadContext
 import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.service.UserService
@@ -56,7 +55,7 @@ class AuthService {
      * 登录
      * @param [loginDTO] 登录传输层对象
      */
-    fun login(loginDTO: LoginDTO): UserInfoVO = ignoreTenantId {
+    fun login(loginDTO: LoginDTO): UserInfoVO {
         logDebug("用户登录：${loginDTO.phone} -> ${passwordEncoder.encode(loginDTO.password)}")
         // 判断用户名密码是否正确
         val user = userService.getUserByPhone(loginDTO.phone)
@@ -78,15 +77,15 @@ class AuthService {
         }
 
         // 获取用户信息
-        setThreadContext(ThreadContext(user.tenants.first().id ?: -1L, user.id, user.name, token))
+        setThreadContext(ThreadContext(userId = user.id, username = user.name, token = token))
         val userInfo = userService.getUserInfo(freshCache = true)
-        return@ignoreTenantId userInfo
+        return userInfo
     }
 
     fun logout(): Boolean {
         val ctx = getThreadContext()
         redissonClient.getBucket<String>("$TOKEN_CACHE_PREFIX:${ctx.token}").delete()
-        redissonClient.getBucket<String>("$SESSION_CACHE_PREFIX:${ctx.userId}").delete()
+        redissonClient.keys.deleteByPattern("$SESSION_CACHE_PREFIX:*:${ctx.userId}")
         return true
     }
 

@@ -5,6 +5,7 @@ import com.leuan.lepton.common.annotations.AllOpen
 import lombok.NoArgsConstructor
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.io.Serializable
 
 
 @AllOpen
@@ -13,9 +14,9 @@ data class UserInfoVO(
     var id: Long,
     var name: String,
     var phone: String,
-    var tenants: MutableSet<Long> = mutableSetOf(),
     var roles: MutableSet<String> = mutableSetOf(),
-    var permissions: MutableSet<String> = mutableSetOf()
+    var permissions: MutableSet<String> = mutableSetOf(),
+    var tenants: MutableSet<TenantDto> = mutableSetOf()
 ) : UserDetails {
 
     @JsonIgnore
@@ -32,4 +33,10 @@ data class UserInfoVO(
     override fun getUsername(): String {
         return id.toString()
     }
+
+    /**
+     * DTO for {@link com.leuan.lepton.tenant.dal.Tenant}
+     */
+    @NoArgsConstructor
+    data class TenantDto(var id: Long, var name: String = "", var logo: String = "") : Serializable
 }

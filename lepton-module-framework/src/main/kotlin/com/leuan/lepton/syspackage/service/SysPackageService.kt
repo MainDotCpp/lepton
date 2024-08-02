@@ -84,7 +84,7 @@ class SysPackageService {
         pageDTO.total =
             jpaQueryFactory.select(qSysPackage.id.count()).from(qSysPackage).where(*expressions)
                 .fetchOne()!!
-        pageDTO.records = query.fetch().map(sysPackageMapper::toVO)
+        pageDTO.data = query.fetch().map(sysPackageMapper::toVO)
         return pageDTO
     }
 

@@ -78,7 +78,7 @@ class SecurityJwtFilter(
             return
         }
 
-        if (context.tenantId != 0L && userInfo.tenants.none { it == context.tenantId }) {
+        if (context.tenantId != 0L && userInfo.tenants.map { it.id }.none { it == context.tenantId }) {
             logError("非法操作")
             filterChain.doFilter(request, response)
             return

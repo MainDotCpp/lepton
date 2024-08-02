@@ -85,7 +85,7 @@ class CustomerService {
         pageDTO.total =
             jpaQueryFactory.select(QCustomer.customer.id.count()).from(QCustomer.customer).where(*expressions)
                 .fetchOne() ?: 0
-        pageDTO.records = query.fetch().map(customerMapper::toVO)
+        pageDTO.data = query.fetch().map(customerMapper::toVO)
         return pageDTO
     }
 

@@ -91,7 +91,7 @@ class MenuService {
         pageDTO.total =
             jpaQueryFactory.select(qMenu.id.count()).from(qMenu).where(*expressions)
                 .fetchOne()!!
-        pageDTO.records = query.fetch().map(menuMapper::toVO)
+        pageDTO.data = query.fetch().map(menuMapper::toVO)
         return pageDTO
     }
 
