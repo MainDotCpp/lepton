@@ -82,10 +82,8 @@ class TenantService {
         val query = jpaQueryFactory
             .selectFrom(qTenant)
             .buildExpressions(queryDTO)
-            .offset(pageDTO.offset)
-            .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(qTenant.id.count()).from(qTenant).where(*buildWhere(queryDTO))
+            jpaQueryFactory.select(qTenant.id.count()).from(qTenant).buildExpressions(queryDTO, false)
                 .fetchOne()!!
         pageDTO.data = query.fetch().map(tenantMapper::toVO)
         return pageDTO

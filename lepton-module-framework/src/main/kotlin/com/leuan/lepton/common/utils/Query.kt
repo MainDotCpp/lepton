@@ -3,7 +3,6 @@ package com.leuan.lepton.common.utils
 import com.leuan.lepton.common.dal.annotations.QueryField
 import com.leuan.lepton.common.dal.annotations.QueryMethod
 import com.leuan.lepton.common.http.BaseQueryDTO
-import com.leuan.lepton.common.log.logInfo
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -18,20 +17,16 @@ fun <Q> test() {
 
 inline fun <reified T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
     queryDTO: Q,
+    sort: Boolean = true,
     where: (queryDTO: Q) -> Array<BooleanExpression?>? = { arrayOf() }
 ): JPAQuery<T> {
     this.where(*where(queryDTO)!!)
 
     // 获取queryDTO 所有的字段
     val fields = queryDTO.javaClass.kotlin.declaredMemberProperties
-    logInfo("fields: ${fields.map { it.name }}")
     // 构造查询条件
     fields.forEach { field ->
-        logInfo("field: ${field.name}")
-        val queryAnno = field.findAnnotations(QueryField::class).firstOrNull()
-        logInfo("queryAnno: $queryAnno")
-        field.annotations.map { logInfo("hasAnno:${it}") }
-        if (queryAnno == null) return@forEach
+        val queryAnno = field.findAnnotations(QueryField::class).firstOrNull() ?: QueryField(field.name)
         val value = field.getValue(queryDTO, field) as Collection<Comparable<*>>? ?: return@forEach
         if (value.isEmpty()) return@forEach
         val path = Expressions.comparablePath(queryAnno.type.java, queryAnno.fieldName)
@@ -49,14 +44,16 @@ inline fun <reified T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
 
 
     // 构造排序条件
-    this.orderBy(OrderSpecifier(Order.DESC, Expressions.path(Long::class.java, "id")))
-    queryDTO.sorter?.let { sorter ->
-        sorter.forEach { it ->
-            val (key, value) = it.split("_")
-            if (value == "ascend") {
-                this.orderBy(OrderSpecifier(Order.ASC, Expressions.path(Long::class.java, key)))
-            } else {
-                this.orderBy(OrderSpecifier(Order.DESC, Expressions.path(Long::class.java, key)))
+    if (sort) {
+        this.orderBy(OrderSpecifier(Order.DESC, Expressions.path(Long::class.java, "id")))
+        queryDTO.sorter?.let { sorter ->
+            sorter.forEach { it ->
+                val (key, value) = it.split("_")
+                if (value == "ascend") {
+                    this.orderBy(OrderSpecifier(Order.ASC, Expressions.path(Long::class.java, key)))
+                } else {
+                    this.orderBy(OrderSpecifier(Order.DESC, Expressions.path(Long::class.java, key)))
+                }
             }
         }
     }
