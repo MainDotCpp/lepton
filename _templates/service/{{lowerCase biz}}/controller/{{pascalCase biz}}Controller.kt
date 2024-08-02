@@ -25,12 +25,12 @@ class {{pascalCase biz}}Controller {
     @GetMapping("list")
     @Operation(summary = "查询{{comment}}列表")
     @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:menu')")
-    fun list(queryDTO: {{pascalCase biz}}QueryDTO = {{pascalCase biz}}QueryDTO()) = {{camelCase biz}}Service.list(queryDTO)
+    fun list(queryDTO: {{pascalCase biz}}QueryDTO) = {{camelCase biz}}Service.list(queryDTO)
 
     @GetMapping("page")
     @Operation(summary = "分页查询{{comment}}列表")
     @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:create')")
-    fun page(queryDTO: {{pascalCase biz}}QueryDTO = {{pascalCase biz}}QueryDTO()) = {{camelCase biz}}Service.page(queryDTO)
+    fun page(queryDTO: {{pascalCase biz}}QueryDTO) = {{camelCase biz}}Service.page(queryDTO)
 
     @PostMapping("save")
     @Operation(summary = "保存{{comment}}")
@@ -45,5 +45,5 @@ class {{pascalCase biz}}Controller {
     @GetMapping("export")
     @Operation(summary = "导出{{comment}}")
     @PreAuthorize("hasAnyAuthority('{{module.name}}:{{camelCase biz}}:export')")
-    fun export(queryDTO: {{pascalCase biz}}QueryDTO = {{pascalCase biz}}QueryDTO()) = ""
+    fun export(queryDTO: {{pascalCase biz}}QueryDTO) = ""
 }

@@ -1,15 +1,18 @@
 package {{module.package}}.{{lowerCase biz}}.service
 
-import {{basePackage}}.common.constants.BizErrEnum
-import {{basePackage}}.common.exception.BizErr
-import {{basePackage}}.common.http.PageDTO
-import {{module.package}}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
-import {{module.package}}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
-import {{module.package}}.{{lowerCase biz}}.controller.vo.{{pascalCase biz}}VO
-import {{module.package}}.{{lowerCase biz}}.dal.Q{{pascalCase biz}}
-import {{module.package}}.{{lowerCase biz}}.dal.{{pascalCase biz}}
-import {{module.package}}.{{lowerCase biz}}.dal.{{pascalCase biz}}Repository
-import {{module.package}}.{{lowerCase biz}}.mapping.{{pascalCase biz}}Mapper
+import {{ module.package }}.common.constants.BizErrEnum
+import {{ module.package }}.common.exception.BizErr
+import {{ module.package }}.common.http.PageDTO
+import {{ module.package }}.common.log.logInfo
+import {{ module.package }}.common.utils.buildExpressions
+import {{ module.package }}.common.utils.toJson
+import {{ module.package }}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}QueryDTO
+import {{ module.package }}.{{lowerCase biz}}.controller.dto.{{pascalCase biz}}SaveDTO
+import {{ module.package }}.{{lowerCase biz}}.controller.vo.{{pascalCase biz}}VO
+import {{ module.package }}.{{lowerCase biz}}.dal.Q{{pascalCase biz}}
+import {{ module.package }}.{{lowerCase biz}}.dal.{{pascalCase biz}}
+import {{ module.package }}.{{lowerCase biz}}.dal.{{pascalCase biz}}Repository
+import {{ module.package }}.{{lowerCase biz}}.mapping.{{pascalCase biz}}Mapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
@@ -50,9 +53,10 @@ class {{pascalCase biz}}Service {
      * 构建表达式
      * @param [queryDTO] 查询传输层对象
      */
-    private fun buildExpressions(queryDTO: {{pascalCase biz}}QueryDTO) = arrayOf(
-        queryDTO.id?.let { q{{pascalCase biz}}.id.eq(it) },
+    private fun buildWhere(queryDTO: {{pascalCase biz}}QueryDTO) = arrayOf(
+        q{{pascalCase biz}}.id.`in`(queryDTO.id),
     )
+
 
     /**
      * 列表
@@ -60,31 +64,29 @@ class {{pascalCase biz}}Service {
      * @return [List<{{pascalCase biz}}VO>]
      */
     fun list(queryDTO: {{pascalCase biz}}QueryDTO): List<{{pascalCase biz}}VO> {
-        val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
             .selectFrom(q{{pascalCase biz}})
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .fetch()
-            .map({{camelCase biz}}Mapper::toVO)
+            .map(.{{lowerCase biz}}Mapper::toVO)
     }
 
     /**
-     * 分页查询{{comment}}
+     * 分页查询{{ comment }}
      * @param [queryDTO] 查询传输层对象
      * @return [PageDTO<{{pascalCase biz}}VO>]
      */
     fun page(queryDTO: {{pascalCase biz}}QueryDTO): PageDTO<{{pascalCase biz}}VO> {
         val pageDTO = PageDTO<{{pascalCase biz}}VO>(queryDTO)
-        val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
             .selectFrom(q{{pascalCase biz}})
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(q{{pascalCase biz}}.id.count()).from(q{{pascalCase biz}}).where(*expressions)
+            jpaQueryFactory.select(q{{pascalCase biz}}.id.count()).from(q{{pascalCase biz}}).where(*buildWhere(queryDTO))
                 .fetchOne()!!
-        pageDTO.records = query.fetch().map({{camelCase biz}}Mapper::toVO)
+        pageDTO.data = query.fetch().map(.{{lowerCase biz}}Mapper::toVO)
         return pageDTO
     }
 
