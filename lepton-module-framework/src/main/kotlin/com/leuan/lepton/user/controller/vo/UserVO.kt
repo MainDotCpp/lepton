@@ -1,6 +1,5 @@
 package com.leuan.lepton.user.controller.vo
 
-import com.leuan.lepton.tenant.dal.Tenant
 import lombok.NoArgsConstructor
 import java.io.Serializable
 
@@ -12,5 +11,6 @@ data class UserVO(
     var id: Long? = null,
     var name: String = "",
     var phone: String? = null,
-    var tenants: MutableSet<Tenant> = mutableSetOf()
-) : Serializable
+    var avatar: String? = null,
+) : Serializable {
+}

@@ -1,7 +1,9 @@
 package com.leuan.lepton.tenant.dal
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.leuan.lepton.syspackage.dal.SysPackage
 import com.leuan.lepton.tenant.enums.TenantTypeEnum
+import com.leuan.lepton.user.dal.User
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.Comment
@@ -38,4 +40,10 @@ class Tenant {
     @ManyToOne
     @JoinColumn(name = "sys_package_id")
     var sysPackage: SysPackage? = null
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "tenants")
+    var users: MutableSet<User> = mutableSetOf()
+
+
 }

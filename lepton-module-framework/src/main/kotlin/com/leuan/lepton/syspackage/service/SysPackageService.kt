@@ -4,6 +4,7 @@ import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.utils.buildExpressions
+import com.leuan.lepton.menu.service.MenuService
 import com.leuan.lepton.syspackage.controller.dto.SysPackageQueryDTO
 import com.leuan.lepton.syspackage.controller.dto.SysPackageSaveDTO
 import com.leuan.lepton.syspackage.controller.vo.SysPackageVO
@@ -29,6 +30,9 @@ class SysPackageService {
 
     @Resource
     private lateinit var sysPackageRepository: SysPackageRepository
+
+    @Resource
+    private lateinit var menuService: MenuService
 
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
@@ -90,6 +94,7 @@ class SysPackageService {
             sysPackageRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
         } ?: SysPackage()
 
+        sysPackageSaveDTO.menuIds = menuService.findAncestorsByMenuIds(sysPackageSaveDTO.menuIds ?: mutableSetOf())
         sysPackageMapper.partialUpdate(sysPackageSaveDTO, entity)
         sysPackageRepository.save(entity)
         return sysPackageMapper.toVO(entity)

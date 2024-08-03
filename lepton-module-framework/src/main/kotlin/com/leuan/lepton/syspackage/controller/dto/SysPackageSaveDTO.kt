@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor
  * DTO for {@link com.leuan.lepton.syspackage.dal.SysPackage }
  */
 @NoArgsConstructor
-data class SysPackageSaveDTO(
+class SysPackageSaveDTO(
     val id: Long? = null,
     val name: String = "",
-    val menuIds: MutableSet<Long>?,
+    var menuIds: MutableSet<Long>?,
 )

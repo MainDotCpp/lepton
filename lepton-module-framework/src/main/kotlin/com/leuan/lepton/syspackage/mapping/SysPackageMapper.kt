@@ -1,7 +1,7 @@
 package com.leuan.lepton.syspackage.mapping
 
 import com.leuan.lepton.common.mapping.LeptonBaseMapping
-import com.leuan.lepton.menu.dal.Menu
+import com.leuan.lepton.menu.mapping.MenuMapper
 import com.leuan.lepton.syspackage.controller.dto.SysPackageSaveDTO
 import com.leuan.lepton.syspackage.controller.vo.SysPackageVO
 import com.leuan.lepton.syspackage.dal.SysPackage
@@ -10,10 +10,12 @@ import org.mapstruct.*
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     componentModel = MappingConstants.ComponentModel.SPRING,
-    uses = [LeptonBaseMapping::class]
+    uses = [LeptonBaseMapping::class, MenuMapper::class]
 )
 abstract class SysPackageMapper {
     abstract fun toEntity(sysPackageVO: SysPackageVO): SysPackage
+
+    @Mapping(source = "menus", target = "menuIds")
     abstract fun toVO(sysPackage: SysPackage): SysPackageVO
 
     @InheritConfiguration
@@ -27,8 +29,5 @@ abstract class SysPackageMapper {
     @Mapping(source = "menuIds", target = "menus")
     abstract fun saveDtoToEntity(sysPackageSaveDTO: SysPackageSaveDTO): SysPackage
 
-    fun menuIdsToMenus(menuIds: MutableSet<Long>): MutableSet<Menu> {
-        return menuIds.map { Menu().apply { id = it } }.toMutableSet()
-    }
 
 }

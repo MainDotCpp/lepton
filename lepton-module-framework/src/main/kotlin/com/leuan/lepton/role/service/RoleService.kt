@@ -4,6 +4,7 @@ import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.utils.buildExpressions
+import com.leuan.lepton.menu.service.MenuService
 import com.leuan.lepton.role.controller.dto.RoleQueryDTO
 import com.leuan.lepton.role.controller.dto.RoleSaveDTO
 import com.leuan.lepton.role.controller.vo.RoleVO
@@ -32,6 +33,9 @@ class RoleService {
 
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
+
+    @Resource
+    private lateinit var menuService: MenuService
 
     private val qRole = QRole.role
 
@@ -90,6 +94,7 @@ class RoleService {
             roleRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
         } ?: Role()
 
+        roleSaveDTO.menuIds = menuService.findAncestorsByMenuIds(roleSaveDTO.menuIds ?: mutableSetOf())
         roleMapper.partialUpdate(roleSaveDTO, entity)
         roleRepository.save(entity)
         return roleMapper.toVO(entity)
@@ -103,6 +108,10 @@ class RoleService {
     fun deleteById(id: Long): Boolean {
         roleRepository.deleteById(id)
         return true
+    }
+
+    fun save(role: Role): Role {
+        return roleRepository.save(role)
     }
 
 }

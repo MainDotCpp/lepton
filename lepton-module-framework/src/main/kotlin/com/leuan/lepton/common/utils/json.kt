@@ -40,7 +40,7 @@ var objectMapper: ObjectMapper = ObjectMapper().let { mapper ->
     mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
 
     //序列化结果格式化，美化输出
-    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+//    mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
     //枚举输出成字符串
     //WRITE_ENUMS_USING_INDEX：输出索引

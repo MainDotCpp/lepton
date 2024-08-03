@@ -27,7 +27,7 @@ class Role : BaseAuditEntity() {
     @ColumnDefault("false")
     var builtin: Boolean = false
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
         name = "sys_role_menu",
         joinColumns = [JoinColumn(name = "role_id")],

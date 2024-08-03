@@ -15,7 +15,6 @@ import com.leuan.lepton.menu.controller.vo.MenuVO
 import com.leuan.lepton.menu.dal.Menu
 import com.leuan.lepton.menu.dal.MenuRepository
 import com.leuan.lepton.menu.dal.QMenu
-import com.leuan.lepton.menu.enums.MenuTypeEnum
 import com.leuan.lepton.menu.mapping.MenuMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
@@ -120,15 +119,15 @@ class MenuService {
         return true
     }
 
-    fun getMenuTree(): Tree<Long>? {
+    fun getMenuTree(): MutableList<Tree<Long>>? {
         val menus = jpaQueryFactory.selectFrom(QMenu.menu)
-            .where(
-                QMenu.menu.type.ne(MenuTypeEnum.BUTTON),
-                QMenu.menu.hidden.eq(false),
-            )
+            .where(QMenu.menu.hidden.eq(false))
             .orderBy(QMenu.menu.id.asc())
             .fetch()
+        return getMenuTree(menus)
+    }
 
+    fun getMenuTree(menus: Collection<Menu>): MutableList<Tree<Long>>? {
         val config = TreeNodeConfig()
         config.weightKey = "sort"
         val treeNodes = menus.map {
@@ -148,7 +147,7 @@ class MenuService {
             node
         }
         logInfo("菜单树：${treeNodes.toJson()}")
-        return TreeUtil.buildSingle(treeNodes, 0L, config) { t, tree ->
+        return TreeUtil.build(treeNodes, 0L, config) { t, tree ->
             tree.id = t.id
             tree.parentId = t.parentId
             tree.name = t.name
@@ -156,6 +155,55 @@ class MenuService {
             tree.putExtra("path", t.extra["path"])
             tree.putExtra("icon", t.extra["icon"])
         }
+    }
+
+    fun findAncestorsByMenuIds(menuIds: MutableCollection<Long> = mutableSetOf()): MutableSet<Long> {
+        logInfo("查找菜单祖先：$menuIds")
+        val menuTree = this.getMenuTree()
+        val ancestors = mutableSetOf<Long>()
+
+        menuIds.forEach { menuId ->
+            menuTree?.forEach { node ->
+                val ancestorsByMenuId = findParentId(node, menuId)
+                ancestors.addAll(ancestorsByMenuId)
+            }
+        }
+
+        logInfo("查找菜单祖先结果：$ancestors")
+        return ancestors
+    }
+
+
+    fun findParentId(node: Tree<Long>, menuId: Long): List<Long> {
+        val ancestors = mutableListOf<Long>()
+        // 终止条件
+        val children = node.children
+        if (node.id == menuId) {
+            ancestors.add(node.id)
+            return ancestors
+        }
+
+        children?.forEach { child ->
+            val ancestorsByMenuId = findParentId(child, menuId)
+            if (ancestorsByMenuId.isNotEmpty()) {
+                ancestors.add(node.id)
+                ancestors.addAll(ancestorsByMenuId)
+                return@forEach
+            }
+        }
+
+        return ancestors
+    }
+
+    fun findParentId(node: Tree<Long>): List<Long> {
+        val ancestors = mutableListOf<Long>()
+        val parent = node.parent
+        if (parent != null) {
+            ancestors.add(parent.id)
+            ancestors.addAll(findParentId(parent))
+        }
+        return ancestors
+
     }
 
 }

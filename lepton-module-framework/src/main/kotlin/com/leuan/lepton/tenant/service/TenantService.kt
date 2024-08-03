@@ -5,6 +5,7 @@ import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
 import com.leuan.lepton.common.log.logInfo
 import com.leuan.lepton.common.thread.getThreadContext
+import com.leuan.lepton.common.thread.ignoreTenantId
 import com.leuan.lepton.common.utils.buildExpressions
 import com.leuan.lepton.common.utils.toJson
 import com.leuan.lepton.role.dal.QRole
@@ -19,6 +20,7 @@ import com.leuan.lepton.tenant.dal.Tenant
 import com.leuan.lepton.tenant.dal.TenantRepository
 import com.leuan.lepton.tenant.mapping.TenantMapper
 import com.leuan.lepton.user.dal.QUser
+import com.leuan.lepton.user.service.UserService
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
@@ -44,6 +46,9 @@ class TenantService {
 
     @Resource
     private lateinit var roleService: RoleService
+
+    @Resource
+    private lateinit var userService: UserService
 
     private val qTenant = QTenant.tenant
 
@@ -105,7 +110,7 @@ class TenantService {
      * @return [TenantVO]
      */
     @Transactional(rollbackFor = [Exception::class])
-    fun save(tenantSaveDTO: TenantSaveDTO): TenantVO {
+    fun save(tenantSaveDTO: TenantSaveDTO): TenantVO = ignoreTenantId {
         val entity = tenantSaveDTO.id?.let {
             tenantRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
         } ?: Tenant()
@@ -116,30 +121,42 @@ class TenantService {
 
         tenantSaveDTO.id ?: run {
             logInfo("首次创建, 添加管理员角色和超级账号到租户 ${entity.toJson()}")
-            val qRole = QRole.role
-            val menus = jpaQueryFactory.select(QSysPackage.sysPackage.menus).from(QSysPackage.sysPackage)
-                .where(QSysPackage.sysPackage.id.eq(tenantSaveDTO.sysPackage.id)).fetchOne()
-            val roleId = jpaQueryFactory
-                .insert(qRole)
-                .set(qRole.name, "管理员")
-                .set(qRole.code, "admin")
-                .set(qRole.tenantId, entity.id)
-                .set(qRole.builtin, true)
-                .set(qRole.menus, menus)
-                .execute()
+            val sysPackage = jpaQueryFactory.select(QSysPackage.sysPackage).from(QSysPackage.sysPackage)
+                .where(QSysPackage.sysPackage.id.eq(entity.sysPackage!!.id)).fetchOne()
+                ?: throw BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND)
+            val role = roleService.save(Role().apply {
+                this.name = "管理员"
+                this.code = "admin"
+                this.menus = sysPackage.menus.map { it }.toMutableSet()
+                this.builtin = true
+                this.tenantId = entity.id!!
+            })
 
             // 添加超级账号到管理员角色
             val createdUser = jpaQueryFactory.selectFrom(QUser.user)
                 .where(QUser.user.id.eq(getThreadContext().userId))
                 .fetchOne()!!
+            createdUser.roles.add(Role().apply { id = role.id })
 
-            createdUser.roles.add(Role().apply { id = roleId })
+            logInfo("添加新租户到管理员角色")
+            createdUser.tenants.add(entity)
+            logInfo("刷新用户缓存")
+            userService.getUserInfo(freshCache = true)
             createdUser
-
         }
 
+        // 更新租户下所有用户的菜单权限
+        val roles = jpaQueryFactory.selectFrom(QRole.role).where(QRole.role.tenantId.eq(entity.id)).fetch()
+        val adminRole = roles.find { it.code == "admin" }!!
+        val menus = entity.sysPackage!!.menus.map { it }.toMutableSet()
+        adminRole.menus = menus
 
-        return tenantMapper.toVO(entity)
+        // 在所有角色的菜单中删除超出套餐的菜单
+        roles.forEach { role ->
+            role.menus = role.menus.filter { menu -> menus.any { it.id == menu.id } }.toMutableSet()
+        }
+
+        return@ignoreTenantId tenantMapper.toVO(entity)
     }
 
     /**
@@ -147,9 +164,23 @@ class TenantService {
      * @param [id] ID
      * @return [Boolean]
      */
-    fun deleteById(id: Long): Boolean {
+    @Transactional(rollbackFor = [Exception::class])
+    fun deleteById(id: Long): Boolean = ignoreTenantId {
+        val tenant =
+            tenantRepository.findOne(qTenant.id.eq(id)).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        // 取消租户下所有用户的角色
+        tenant.users.forEach {
+            it.roles = it.roles.filter { role -> role.tenantId != id }.toMutableSet()
+            it.tenants = it.tenants.filter { tenant -> tenant.id != id }.toMutableSet()
+        }
+
+        tenant.sysPackage = null
+
+        // 删除角色
+        jpaQueryFactory.delete(QRole.role).where(QRole.role.tenantId.eq(id)).execute()
+        tenantRepository.save(tenant)
         tenantRepository.deleteById(id)
-        return true
+        return@ignoreTenantId true
     }
 
 }

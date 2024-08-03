@@ -1,5 +1,5 @@
 const moduleMapping = {
-    framework: {
+    system : {
         name: 'system',
         package: 'com.leuan.lepton',
         module: 'lepton-module-framework',

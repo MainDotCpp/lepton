@@ -4,6 +4,7 @@ import com.leuan.lepton.common.mapping.LeptonBaseMapping
 import com.leuan.lepton.menu.controller.dto.MenuSaveDTO
 import com.leuan.lepton.menu.controller.vo.MenuVO
 import com.leuan.lepton.menu.dal.Menu
+import com.leuan.lepton.menu.enums.MenuTypeEnum
 import org.mapstruct.*
 
 @Mapper(
@@ -23,4 +24,15 @@ abstract class MenuMapper {
         return id?.let { Menu().apply { this.id = it } }
     }
 
+    fun EntityToId(entity: Menu?): Long? {
+        return entity?.id
+    }
+
+    fun menusToMenuIds(menus: MutableSet<Menu>): MutableSet<Long> {
+        return menus.filter { it.type != MenuTypeEnum.CATALOG }.map { it.id!! }.toMutableSet()
+    }
+
+    fun menuIdsToMenus(menuIds: MutableSet<Long>): MutableSet<Menu> {
+        return menuIds.map { Menu().apply { id = it } }.toMutableSet()
+    }
 }

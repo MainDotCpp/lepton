@@ -9,11 +9,12 @@ import java.util.*
  */
 @NoArgsConstructor
 class RoleVO(
-    var id: Long
+    var id: Long, var menuIds: MutableSet<Long>?
 ) : Serializable {
     var createdByName: String? = ""
     var createdAt: Date? = Date()
     var name: String? = ""
     var code: String? = ""
     var builtin: Boolean? = false
+
 }

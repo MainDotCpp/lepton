@@ -142,5 +142,9 @@ class UserService {
             userInfo
         }
 
+    fun save(user: User): User {
+        return userRepository.save(user)
+    }
+
 
 }

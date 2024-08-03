@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-    <component name="JpaPluginProjectSettings">
-        <option name="lastSelectedLanguage" value="Kotlin"/>
-    </component>
+  <component name="JpaPluginProjectSettings" commentSavingStrategy="@Comment annotation" reExcludeTablePrefixes="" reExcludeColumnPrefixes="" reExcludeTableSuffixes="" reExcludeColumnSuffixes="" dtoClassNamePostfix="DTO" mapperMethodToEntityPattern="to${ENTITY_NAME}" mapperMethodToDtoPattern="to${DTO_NAME}" mapperMethodUpdatePattern="partialUpdateBy${DTO_NAME}">
+    <option name="entityNameTemplate" />
+    <option name="isLombokNoArgsConstructor" value="true" />
+    <option name="useLazyOnToOneAssociations" value="true" />
+    <option name="lastSelectedLanguage" value="Kotlin" />
+  </component>
 </project>

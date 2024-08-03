@@ -27,6 +27,9 @@ class User {
     @Column(name = "password", nullable = false)
     var password: String = ""
 
+    @Comment("头像")
+    @Column(name = "avatar")
+    var avatar: String? = null
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
