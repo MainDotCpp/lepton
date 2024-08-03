@@ -28,7 +28,7 @@ class User {
     var password: String = ""
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "sys_user_tenant",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -36,7 +36,7 @@ class User {
     )
     var tenants: MutableSet<Tenant> = mutableSetOf()
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "sys_user_role",
         joinColumns = [JoinColumn(name = "user_id")],

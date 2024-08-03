@@ -9,5 +9,6 @@ import java.io.Serializable
 @NoArgsConstructor
 data class SysPackageVO(
     var id: Long,
-    var name: String = ""
+    var name: String = "",
+    var menuIds: MutableSet<Long>?
 ) : Serializable

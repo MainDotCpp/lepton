@@ -3,6 +3,7 @@ package com.leuan.lepton.syspackage.service
 import com.leuan.lepton.common.constants.BizErrEnum
 import com.leuan.lepton.common.exception.BizErr
 import com.leuan.lepton.common.http.PageDTO
+import com.leuan.lepton.common.utils.buildExpressions
 import com.leuan.lepton.syspackage.controller.dto.SysPackageQueryDTO
 import com.leuan.lepton.syspackage.controller.dto.SysPackageSaveDTO
 import com.leuan.lepton.syspackage.controller.vo.SysPackageVO
@@ -46,13 +47,6 @@ class SysPackageService {
         return sysPackageMapper.toVO(entity)
     }
 
-    /**
-     * 构建表达式
-     * @param [queryDTO] 查询传输层对象
-     */
-    private fun buildExpressions(queryDTO: SysPackageQueryDTO) = arrayOf(
-        queryDTO.id?.let { qSysPackage.id.eq(it) },
-    )
 
     /**
      * 列表
@@ -60,10 +54,9 @@ class SysPackageService {
      * @return [List<SysPackageVO>]
      */
     fun list(queryDTO: SysPackageQueryDTO): List<SysPackageVO> {
-        val expressions = buildExpressions(queryDTO)
         return jpaQueryFactory
             .selectFrom(qSysPackage)
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .fetch()
             .map(sysPackageMapper::toVO)
     }
@@ -75,14 +68,13 @@ class SysPackageService {
      */
     fun page(queryDTO: SysPackageQueryDTO): PageDTO<SysPackageVO> {
         val pageDTO = PageDTO<SysPackageVO>(queryDTO)
-        val expressions = buildExpressions(queryDTO)
         val query = jpaQueryFactory
             .selectFrom(qSysPackage)
-            .where(*expressions)
+            .buildExpressions(queryDTO)
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =
-            jpaQueryFactory.select(qSysPackage.id.count()).from(qSysPackage).where(*expressions)
+            jpaQueryFactory.select(qSysPackage.id.count()).from(qSysPackage).buildExpressions(queryDTO, sort = false)
                 .fetchOne()!!
         pageDTO.data = query.fetch().map(sysPackageMapper::toVO)
         return pageDTO

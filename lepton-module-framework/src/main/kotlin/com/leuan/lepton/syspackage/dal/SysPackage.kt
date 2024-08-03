@@ -19,7 +19,7 @@ class SysPackage {
     @ColumnDefault("''")
     var name: String = ""
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "sys_package_menu",
         joinColumns = [JoinColumn(name = "sysPackage_id")],

@@ -6,11 +6,4 @@ import lombok.NoArgsConstructor
 
 @NoArgsConstructor
 @Schema(description = "系统套餐查询参数")
-class SysPackageQueryDTO(
-    @Schema(description = "系统套餐ID")
-    val id: Long? = null,
-    @Schema(description = "当前页")
-    override var current: Long = 1,
-    @Schema(description = "每页大小")
-    override var pageSize: Long = 10
-) : BaseQueryDTO()
+class SysPackageQueryDTO() : BaseQueryDTO()

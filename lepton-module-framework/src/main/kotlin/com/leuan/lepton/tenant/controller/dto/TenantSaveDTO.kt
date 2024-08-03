@@ -14,7 +14,7 @@ data class TenantSaveDTO(
     val name: String = "",
     val type: TenantTypeEnum = TenantTypeEnum.ACTIVE,
     val code: String = "",
-    val sysPackage: SysPackageDto? = null
+    val sysPackage: SysPackageDto
 ) {
     /**
      * DTO for {@link com.leuan.lepton.syspackage.dal.SysPackage}
