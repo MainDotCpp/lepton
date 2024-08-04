@@ -3,7 +3,6 @@ package com.leuan.lepton.user.mapping
 import com.leuan.lepton.common.mapping.LeptonBaseMapping
 import com.leuan.lepton.common.thread.getThreadContext
 import com.leuan.lepton.role.dal.Role
-import com.leuan.lepton.tenant.dal.Tenant
 import com.leuan.lepton.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.controller.vo.UserVO
@@ -33,11 +32,11 @@ abstract class UserMapper {
     abstract fun toDto(user: User): UserInfoVO
 
     fun rolesToRoleCodes(roles: Set<Role>): MutableSet<String> {
-        return roles.filter { tenant -> tenant.id == getThreadContext().tenantId }.map { it.code }.toMutableSet()
+        return roles.filter { role -> role.tenantId == getThreadContext().tenantId }.map { it.code }.toMutableSet()
     }
 
     fun rolesToPermissionCodes(roles: Set<Role>): MutableSet<String> {
-        return roles.filter { tenant -> tenant.id == getThreadContext().tenantId }
+        return roles.filter { role -> role.tenantId == getThreadContext().tenantId }
             .flatMap { it.menus.map { menu -> menu.permission } }.filter { it.isNotBlank() }.toMutableSet()
     }
 }

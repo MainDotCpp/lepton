@@ -20,6 +20,7 @@ import com.leuan.lepton.tenant.dal.Tenant
 import com.leuan.lepton.tenant.dal.TenantRepository
 import com.leuan.lepton.tenant.mapping.TenantMapper
 import com.leuan.lepton.user.dal.QUser
+import com.leuan.lepton.user.dal.User
 import com.leuan.lepton.user.service.UserService
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
@@ -119,41 +120,47 @@ class TenantService {
         tenantRepository.save(entity)
         logInfo("保存租户 ${entity.toJson()}")
 
-        tenantSaveDTO.id ?: run {
+        tenantSaveDTO.id?.let {
+            // 更新租户下所有用户的菜单权限
+            val roles = jpaQueryFactory.selectFrom(QRole.role).where(QRole.role.tenantId.eq(entity.id)).fetch()
+            val adminRole = roles.find { it.code == "admin" }!!
+            val menus = entity.sysPackage!!.menus.map { it }.toMutableSet()
+            adminRole.menus = menus
+
+            // 在所有角色的菜单中删除超出套餐的菜单
+            roles.forEach { role ->
+                role.menus = role.menus.filter { menu -> menus.any { it.id == menu.id } }.toMutableSet()
+            }
+
+        } ?: run {
             logInfo("首次创建, 添加管理员角色和超级账号到租户 ${entity.toJson()}")
             val sysPackage = jpaQueryFactory.select(QSysPackage.sysPackage).from(QSysPackage.sysPackage)
                 .where(QSysPackage.sysPackage.id.eq(entity.sysPackage!!.id)).fetchOne()
                 ?: throw BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND)
+
+            // 添加超级账号到管理员角色
+            val createdUser = jpaQueryFactory.selectFrom(QUser.user)
+                .where(QUser.user.id.eq(getThreadContext().userId))
+                .fetchOne()!!
+
             val role = roleService.save(Role().apply {
                 this.name = "管理员"
                 this.code = "admin"
                 this.menus = sysPackage.menus.map { it }.toMutableSet()
                 this.builtin = true
                 this.tenantId = entity.id!!
+                this.users = mutableSetOf(createdUser)
             })
+            roleService.save(role)
 
-            // 添加超级账号到管理员角色
-            val createdUser = jpaQueryFactory.selectFrom(QUser.user)
-                .where(QUser.user.id.eq(getThreadContext().userId))
-                .fetchOne()!!
             createdUser.roles.add(Role().apply { id = role.id })
 
             logInfo("添加新租户到管理员角色")
             createdUser.tenants.add(entity)
+            userService.save(createdUser)
             logInfo("刷新用户缓存")
             userService.getUserInfo(freshCache = true)
             createdUser
-        }
-
-        // 更新租户下所有用户的菜单权限
-        val roles = jpaQueryFactory.selectFrom(QRole.role).where(QRole.role.tenantId.eq(entity.id)).fetch()
-        val adminRole = roles.find { it.code == "admin" }!!
-        val menus = entity.sysPackage!!.menus.map { it }.toMutableSet()
-        adminRole.menus = menus
-
-        // 在所有角色的菜单中删除超出套餐的菜单
-        roles.forEach { role ->
-            role.menus = role.menus.filter { menu -> menus.any { it.id == menu.id } }.toMutableSet()
         }
 
         return@ignoreTenantId tenantMapper.toVO(entity)

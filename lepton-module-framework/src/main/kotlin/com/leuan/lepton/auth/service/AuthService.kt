@@ -77,7 +77,7 @@ class AuthService {
         }
 
         // 获取用户信息
-        setThreadContext(ThreadContext(userId = user.id, username = user.name, token = token))
+        setThreadContext(ThreadContext(userId = user.id, username = user.name, token = token, tenantId = 0))
         val userInfo = userService.getUserInfo(freshCache = true)
         return userInfo
     }

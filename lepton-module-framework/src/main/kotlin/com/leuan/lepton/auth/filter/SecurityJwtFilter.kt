@@ -14,6 +14,7 @@ import com.leuan.lepton.user.controller.vo.UserInfoVO
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.MDC
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.util.AntPathMatcher
@@ -84,6 +85,11 @@ class SecurityJwtFilter(
             return
         }
         // 校验流程全部通过, 设置用户信息到spring security上下文
+
+        MDC.put("userId", userId)
+        MDC.put("userName", context.username)
+        MDC.put("tenantId", context.tenantId.toString())
+
         val authenticationToken = UsernamePasswordAuthenticationToken(userInfo, null, userInfo.authorities)
         SecurityContextHolder.getContext().authentication = authenticationToken
         filterChain.doFilter(request, response)
