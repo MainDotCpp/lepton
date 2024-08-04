@@ -12,8 +12,10 @@ import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.controller.vo.UserVO
 import com.leuan.lepton.user.dal.QUser
 import com.leuan.lepton.user.dal.User
+import com.leuan.lepton.user.dal.UserInfo
 import com.leuan.lepton.user.dal.UserRepository
 import com.leuan.lepton.user.mapping.UserMapper
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
@@ -144,6 +146,13 @@ class UserService {
 
     fun save(user: User): User {
         return userRepository.save(user)
+    }
+
+    fun test(): Any {
+        return jpaQueryFactory
+
+            .from(qUser)
+            .fetch()
     }
 
 

@@ -3,6 +3,8 @@ package com.leuan.lepton.user.dal
 import com.leuan.lepton.role.dal.Role
 import com.leuan.lepton.tenant.dal.Tenant
 import jakarta.persistence.*
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import org.hibernate.annotations.Comment
 
 @Comment("系统用户")

@@ -15,6 +15,7 @@ import com.leuan.lepton.role.mapping.RoleMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * 角色服务
@@ -105,7 +106,12 @@ class RoleService {
      * @param [id] ID
      * @return [Boolean]
      */
+    @Transactional(rollbackFor = [Exception::class])
     fun deleteById(id: Long): Boolean {
+        val role =
+            roleRepository.findOne(qRole.id.eq(id)).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        role.users.forEach { it.roles.remove(role) }
+        roleRepository.save(role)
         roleRepository.deleteById(id)
         return true
     }

@@ -50,4 +50,7 @@ class UserController {
     @GetMapping("userInfo")
     @Operation(summary = "获取用户信息")
     fun userInfo() = userService.getUserInfo()
+
+    @GetMapping("test")
+    fun test() = userService.test()
 }

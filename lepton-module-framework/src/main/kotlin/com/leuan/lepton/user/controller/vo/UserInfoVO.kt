@@ -16,7 +16,8 @@ data class UserInfoVO(
     var phone: String,
     var roles: MutableSet<String> = mutableSetOf(),
     var permissions: MutableSet<String> = mutableSetOf(),
-    var tenants: MutableSet<TenantDto> = mutableSetOf(), var avatar: String = ""
+    var tenants: MutableSet<TenantDto> = mutableSetOf(),
+    var avatar: String?
 ) : UserDetails {
 
     @JsonIgnore

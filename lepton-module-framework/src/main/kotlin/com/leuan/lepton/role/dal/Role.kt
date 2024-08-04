@@ -2,6 +2,7 @@ package com.leuan.lepton.role.dal
 
 import com.leuan.lepton.common.dal.BaseAuditEntity
 import com.leuan.lepton.menu.dal.Menu
+import com.leuan.lepton.user.dal.User
 import jakarta.persistence.*
 import lombok.EqualsAndHashCode
 import org.hibernate.annotations.ColumnDefault
@@ -34,4 +35,7 @@ class Role : BaseAuditEntity() {
         inverseJoinColumns = [JoinColumn(name = "menu_id")]
     )
     var menus: MutableSet<Menu> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "roles")
+    var users: MutableSet<User> = mutableSetOf()
 }
