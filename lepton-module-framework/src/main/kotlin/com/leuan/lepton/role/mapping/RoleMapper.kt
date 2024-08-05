@@ -26,9 +26,12 @@ abstract class RoleMapper {
     abstract fun partialUpdate(saveDTO: RoleSaveDTO, @MappingTarget role: Role): Role
 
 
-
     fun idToEntity(id: Long?): Role? {
         return id?.let { Role().apply { this.id = it } }
+    }
+
+    fun entityToId(role: Role?): Long? {
+        return role?.id
     }
 
 }

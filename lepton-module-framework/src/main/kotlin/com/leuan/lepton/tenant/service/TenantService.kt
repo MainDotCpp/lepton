@@ -12,6 +12,7 @@ import com.leuan.lepton.role.dal.QRole
 import com.leuan.lepton.role.dal.Role
 import com.leuan.lepton.role.service.RoleService
 import com.leuan.lepton.syspackage.dal.QSysPackage
+import com.leuan.lepton.syspackage.dal.SysPackageRepository
 import com.leuan.lepton.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.tenant.controller.dto.TenantSaveDTO
 import com.leuan.lepton.tenant.controller.vo.TenantVO
@@ -20,7 +21,6 @@ import com.leuan.lepton.tenant.dal.Tenant
 import com.leuan.lepton.tenant.dal.TenantRepository
 import com.leuan.lepton.tenant.mapping.TenantMapper
 import com.leuan.lepton.user.dal.QUser
-import com.leuan.lepton.user.dal.User
 import com.leuan.lepton.user.service.UserService
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional
  * @constructor 创建[TenantService]
  */
 @Service
-class TenantService {
+class TenantService(private val sysPackageRepository: SysPackageRepository) {
 
     @Resource
     private lateinit var tenantMapper: TenantMapper
@@ -121,16 +121,23 @@ class TenantService {
         logInfo("保存租户 ${entity.toJson()}")
 
         tenantSaveDTO.id?.let {
+            val sysPackage = jpaQueryFactory.selectFrom(QSysPackage.sysPackage)
+                .where(QSysPackage.sysPackage.id.eq(entity.sysPackage!!.id))
+                .fetchOne() ?: throw BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND)
+            val menus = sysPackage!!.menus.map { it }.toMutableSet()
+            logInfo("更新租户下所有用户的菜单权限:${menus.map { it.permission }}")
+
             // 更新租户下所有用户的菜单权限
             val roles = jpaQueryFactory.selectFrom(QRole.role).where(QRole.role.tenantId.eq(entity.id)).fetch()
-            val adminRole = roles.find { it.code == "admin" }!!
-            val menus = entity.sysPackage!!.menus.map { it }.toMutableSet()
-            adminRole.menus = menus
 
             // 在所有角色的菜单中删除超出套餐的菜单
             roles.forEach { role ->
                 role.menus = role.menus.filter { menu -> menus.any { it.id == menu.id } }.toMutableSet()
             }
+
+            val adminRole = roles.find { it.code == "admin" }!!
+            adminRole.menus = menus
+            roleService.save(adminRole)
 
         } ?: run {
             logInfo("首次创建, 添加管理员角色和超级账号到租户 ${entity.toJson()}")

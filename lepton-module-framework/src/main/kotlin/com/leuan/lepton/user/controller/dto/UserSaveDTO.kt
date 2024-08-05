@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor
  */
 @NoArgsConstructor
 data class UserSaveDTO(
-    val id: Long? = null, val name: String? = null, val phone: String? = null, val password: String? = null,
+    val id: Long? = null,
+    val name: String? = null,
+    val phone: String? = null,
+    val password: String? = null,
     val avatar: String = "",
+    val roleIds: MutableSet<Long> = mutableSetOf()
 )

@@ -12,13 +12,13 @@ import com.leuan.lepton.user.controller.vo.UserInfoVO
 import com.leuan.lepton.user.controller.vo.UserVO
 import com.leuan.lepton.user.dal.QUser
 import com.leuan.lepton.user.dal.User
-import com.leuan.lepton.user.dal.UserInfo
 import com.leuan.lepton.user.dal.UserRepository
 import com.leuan.lepton.user.mapping.UserMapper
-import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * 用户服务
@@ -37,6 +37,9 @@ class UserService {
 
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
+
+    @Resource
+    private lateinit var passwordEncoder: BCryptPasswordEncoder
 
     private val qUser = QUser.user
 
@@ -99,13 +102,27 @@ class UserService {
      * @param [userSaveDTO] 用户保存传输层对象
      * @return [UserVO]
      */
+    @Transactional(rollbackFor = [Exception::class])
     fun save(userSaveDTO: UserSaveDTO): UserVO {
         val entity = userSaveDTO.id?.let {
             userRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
         } ?: User()
 
+        // 校验手机号是否重复
+        if (userRepository.exists(qUser.phone.eq(userSaveDTO.phone))) {
+            throw BizErr(BizErrEnum.USER_PHONE_EXIST)
+        }
+
+        // 密码加密
+        if (userSaveDTO.password != null) {
+            entity.password = passwordEncoder.encode(userSaveDTO.password)
+        }
+
+
         userMapper.partialUpdate(userSaveDTO, entity)
         userRepository.save(entity)
+
+        // 更新角色
         return userMapper.toVO(entity)
     }
 

@@ -25,4 +25,8 @@ abstract class {{pascalCase biz}}Mapper {
         return id?.let { {{pascalCase biz}}().apply { this.id = it } }
     }
 
+    fun entityToId({{camelCase biz}}: {{pascalCase biz}}?): Long? {
+        return {{camelCase biz}}?.id
+    }
+
 }

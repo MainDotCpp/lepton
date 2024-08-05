@@ -66,5 +66,6 @@ lepton:
     - /auth/login
   ignore-tenant-url:
     - /user/userInfo
+    - /tenant/save
   auth:
     token-expire-days: 3

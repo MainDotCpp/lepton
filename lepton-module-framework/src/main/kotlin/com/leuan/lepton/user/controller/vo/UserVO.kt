@@ -12,5 +12,6 @@ data class UserVO(
     var name: String = "",
     var phone: String? = null,
     var avatar: String? = null,
+    var roleIds: MutableSet<Long>?,
 ) : Serializable {
 }
