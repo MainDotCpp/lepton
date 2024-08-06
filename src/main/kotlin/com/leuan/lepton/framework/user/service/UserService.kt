@@ -1,0 +1,176 @@
+package com.leuan.lepton.framework.user.service
+
+import com.leuan.lepton.framework.common.constants.BizErrEnum
+import com.leuan.lepton.framework.common.constants.SESSION_CACHE_PREFIX
+import com.leuan.lepton.framework.common.exception.BizErr
+import com.leuan.lepton.framework.common.http.PageDTO
+import com.leuan.lepton.framework.common.thread.getThreadContext
+import com.leuan.lepton.framework.common.utils.cache
+import com.leuan.lepton.framework.user.controller.dto.UserQueryDTO
+import com.leuan.lepton.framework.user.controller.dto.UserSaveDTO
+import com.leuan.lepton.framework.user.controller.vo.UserInfoVO
+import com.leuan.lepton.framework.user.controller.vo.UserVO
+import com.leuan.lepton.framework.user.dal.QUser
+import com.leuan.lepton.framework.user.dal.User
+import com.leuan.lepton.framework.user.dal.UserRepository
+import com.leuan.lepton.framework.user.mapping.UserMapper
+import com.querydsl.jpa.impl.JPAQueryFactory
+import jakarta.annotation.Resource
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+/**
+ * 用户服务
+ * @author yangyang
+ * @date 2024/07/26
+ * @constructor 创建[UserService]
+ */
+@Service
+class UserService {
+
+    @Resource
+    private lateinit var userMapper: UserMapper
+
+    @Resource
+    private lateinit var userRepository: UserRepository
+
+    @Resource
+    private lateinit var jpaQueryFactory: JPAQueryFactory
+
+    @Resource
+    private lateinit var passwordEncoder: BCryptPasswordEncoder
+
+    private val qUser = QUser.user
+
+    /**
+     * 通过id获取用户
+     * @param [id] ID
+     * @return [UserVO]
+     */
+    fun getById(id: Long): UserVO {
+        val entity = userRepository
+            .findOne(qUser.id.eq(id))
+            .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        return userMapper.toVO(entity)
+    }
+
+    /**
+     * 构建表达式
+     * @param [queryDTO] 查询传输层对象
+     */
+    private fun buildExpressions(queryDTO: UserQueryDTO) = arrayOf(
+        queryDTO.id?.let { qUser.id.eq(it) },
+    )
+
+    /**
+     * 列表
+     * @param [queryDTO] 查询传输层对象
+     * @return [List<UserVO>]
+     */
+    fun list(queryDTO: UserQueryDTO): List<UserVO> {
+        val expressions = buildExpressions(queryDTO)
+        return jpaQueryFactory
+            .selectFrom(qUser)
+            .where(*expressions)
+            .fetch()
+            .map(userMapper::toVO)
+    }
+
+    /**
+     * 分页查询用户
+     * @param [queryDTO] 查询传输层对象
+     * @return [PageDTO<UserVO>]
+     */
+    fun page(queryDTO: UserQueryDTO): PageDTO<UserVO> {
+        val pageDTO = PageDTO<UserVO>(queryDTO)
+        val expressions = buildExpressions(queryDTO)
+        val query = jpaQueryFactory
+            .selectFrom(qUser)
+            .where(*expressions)
+            .offset(pageDTO.offset)
+            .limit(pageDTO.pageSize)
+        pageDTO.total =
+            jpaQueryFactory.select(qUser.id.count()).from(qUser).where(*expressions)
+                .fetchOne()!!
+        pageDTO.data = query.fetch().map(userMapper::toVO)
+        return pageDTO
+    }
+
+    /**
+     * 保存
+     * @param [userSaveDTO] 用户保存传输层对象
+     * @return [UserVO]
+     */
+    @Transactional(rollbackFor = [Exception::class])
+    fun save(userSaveDTO: UserSaveDTO): UserVO {
+        val entity = userSaveDTO.id?.let {
+            userRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        } ?: User()
+
+        // 校验手机号是否重复
+        if (userRepository.exists(qUser.phone.eq(userSaveDTO.phone))) {
+            throw BizErr(BizErrEnum.USER_PHONE_EXIST)
+        }
+
+        // 密码加密
+        if (userSaveDTO.password != null) {
+            entity.password = passwordEncoder.encode(userSaveDTO.password)
+        }
+
+
+        userMapper.partialUpdate(userSaveDTO, entity)
+        userRepository.save(entity)
+
+        // 更新角色
+        return userMapper.toVO(entity)
+    }
+
+    /**
+     * 按id删除
+     * @param [id] ID
+     * @return [Boolean]
+     */
+    fun deleteById(id: Long): Boolean {
+        userRepository.deleteById(id)
+        return true
+    }
+
+    /**
+     * 通过手机号获取用户
+     * @param [phone] 电话
+     * @return [User?]
+     */
+    fun getUserByPhone(phone: String): User? {
+        return jpaQueryFactory.selectFrom(QUser.user)
+            .where(QUser.user.phone.eq(phone))
+            .fetchOne()
+    }
+
+    /**
+     * 获取用户信息
+     * @param [id] ID
+     * @param [freshCache] 新鲜缓存
+     * @return [UserInfoVO]
+     */
+    fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
+        cache("$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}", fresh = freshCache) {
+            if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
+            val user = userRepository.findOne(qUser.id.eq(id)).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
+            val userInfo = userMapper.toDto(user)
+            userInfo
+        }
+
+    fun save(user: User): User {
+        return userRepository.save(user)
+    }
+
+    fun test(): Any {
+        return jpaQueryFactory
+
+            .from(qUser)
+            .fetch()
+    }
+
+
+}

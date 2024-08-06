@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://d3-cf.com:5432/fision?timezone=UTF-8
+    username: fision
+    password: fision_admin
+  jpa:
+    hibernate:
+#      ddl-auto: update
+  data:
+    redis:
+      address: redis://43.136.92.103:6379
+      database: 3
+      password: Leuan_3rd
+
