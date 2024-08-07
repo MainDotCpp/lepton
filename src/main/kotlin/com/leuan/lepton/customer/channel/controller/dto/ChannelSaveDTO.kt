@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor
  */
 @NoArgsConstructor
 data class ChannelSaveDTO(
-    val id: Long? = null
+    val id: Long? = null, val name: String = "", val icon: String? = null, val textColor: String? = null, val backgroundColor: String? = null
 )

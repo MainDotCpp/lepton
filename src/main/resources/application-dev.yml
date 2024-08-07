@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:postgresql://d3-cf.com:5432/lepton?timezone=UTF-8
+    url: jdbc:log4jdbc:postgresql://d3-cf.com:5432/fision?timezone=UTF-8
     username: fision
     password: fision_admin
   jpa:
