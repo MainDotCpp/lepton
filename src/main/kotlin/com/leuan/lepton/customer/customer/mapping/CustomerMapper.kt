@@ -1,22 +1,34 @@
 package com.leuan.lepton.customer.customer.mapping
 
-import com.leuan.lepton.framework.common.mapping.LeptonBaseMapping
-import com.leuan.lepton.customer.customer.controller.dto.CustomerSaveDTO
+import com.leuan.lepton.customer.channel.mapping.ChannelMapper
 import com.leuan.lepton.customer.customer.controller.dto.CustomerQueryDTO
+import com.leuan.lepton.customer.customer.controller.dto.CustomerSaveDTO
 import com.leuan.lepton.customer.customer.controller.vo.CustomerVO
 import com.leuan.lepton.customer.customer.dal.Customer
+import com.leuan.lepton.framework.common.mapping.LeptonBaseMapping
 import org.mapstruct.*
 
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     componentModel = MappingConstants.ComponentModel.SPRING,
-    uses = [LeptonBaseMapping::class]
+    uses = [LeptonBaseMapping::class, ChannelMapper::class]
 )
 abstract class CustomerMapper {
+    @Mappings(
+        Mapping(source = "channelId", target = "channel.id"),
+        Mapping(source = "saleId", target = "sale.id")
+    )
     abstract fun toEntity(customerVO: CustomerVO): Customer
     abstract fun toEntity(customerQueryDTO: CustomerQueryDTO): Customer
+
+    @Mappings(
+        Mapping(source = "channel.id", target = "channelId"),
+        Mapping(source = "sale.id", target = "saleId")
+    )
     abstract fun toVO(customer: Customer): CustomerVO
 
+    @Mapping(source = "channelId", target = "channel")
+    @Mapping(source = "saleId", target = "sale")
     @InheritConfiguration
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     abstract fun partialUpdate(saveDTO: CustomerSaveDTO, @MappingTarget customer: Customer): Customer

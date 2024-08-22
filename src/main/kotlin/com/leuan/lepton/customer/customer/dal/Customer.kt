@@ -40,6 +40,12 @@ class Customer : BaseAuditEntity() {
     @ColumnDefault("''")
     var photoType: String = ""
 
+    @Comment("来源")
+    @Schema(description = "来源", nullable = false)
+    @Column(name = "source", nullable = false)
+    @ColumnDefault("''")
+    var source:String = ""
+
     @Comment("销售")
     @ManyToOne
     @JoinColumn(name = "sales_id")

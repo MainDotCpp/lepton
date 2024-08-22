@@ -8,5 +8,11 @@ import java.io.Serializable
  */
 @NoArgsConstructor
 data class CustomerVO(
-    var id: Long
+    var id: Long,
+    var name: String = "",
+    var phone: String? = null,
+    var wechat: String? = null,
+    var channelId: Long = 0,
+    var photoType: String = "",
+    var saleId: Long = 0, var source: String = ""
 ) : Serializable

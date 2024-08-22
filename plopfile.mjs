@@ -16,7 +16,7 @@ export default function Plopfile(plop) {
             prompts: [
                 {
                     type: 'list',
-                    name: 'module',
+                    name: 'moduleName',
                     message: '模块',
                     choices: Object.keys(moduleMapping)
                 },
@@ -33,12 +33,12 @@ export default function Plopfile(plop) {
             ],
             actions: (data) => {
                 console.log(`plop ${data.module} ${data.biz} ${data.comment}`)
-                data.module = moduleMapping[data.module]
+                data.module = moduleMapping[data.moduleName]
                 return [
                     {
                         type: 'addMany',
                         base: '_templates/service',
-                        destination: 'src/main/kotlin/com/leuan/lepton/{{lowerCase module.name}}',
+                        destination: 'src/main/kotlin/com/leuan/lepton/{{lowerCase moduleName}}',
                         force: true,
                         templateFiles: '_templates/service',
                         data: {
