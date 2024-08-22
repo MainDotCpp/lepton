@@ -25,6 +25,7 @@ abstract class UserMapper {
     @InheritConfiguration
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     abstract fun partialUpdate(saveDTO: UserSaveDTO, @MappingTarget user: User): User
+
     fun idToEntity(id: Long?): User? {
         return id?.let { User().apply { this.id = it } }
     }
