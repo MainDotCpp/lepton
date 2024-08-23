@@ -8,5 +8,5 @@ import java.io.Serializable
  */
 @NoArgsConstructor
 data class ChannelVO(
-    var id: Long
+    var id: Long, var name: String = "", var icon: String? = null, var textColor: String? = null, var backgroundColor: String? = null
 ) : Serializable
