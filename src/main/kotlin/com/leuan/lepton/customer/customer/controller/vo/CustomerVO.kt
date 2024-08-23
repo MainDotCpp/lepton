@@ -2,6 +2,7 @@ package com.leuan.lepton.customer.customer.controller.vo
 
 import lombok.NoArgsConstructor
 import java.io.Serializable
+import java.util.*
 
 /**
  * DTO for {@link com.leuan.lepton.customer.customer.dal.Customer }
@@ -14,5 +15,8 @@ data class CustomerVO(
     var wechat: String? = null,
     var channelId: Long = 0,
     var photoType: String = "",
-    var saleId: Long = 0, var source: String = ""
+    var saleId: Long = 0,
+    var source: String = "",
+    var createdAt: Date = Date(),
+    var createdById: Long = 0
 ) : Serializable

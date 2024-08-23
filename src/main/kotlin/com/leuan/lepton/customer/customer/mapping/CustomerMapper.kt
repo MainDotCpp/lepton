@@ -15,14 +15,14 @@ import org.mapstruct.*
 )
 abstract class CustomerMapper {
     @Mappings(
-        Mapping(source = "channelId", target = "channel.id"),
+        Mapping(source = "createdById", target = "createdBy.id"),
         Mapping(source = "saleId", target = "sale.id")
     )
     abstract fun toEntity(customerVO: CustomerVO): Customer
     abstract fun toEntity(customerQueryDTO: CustomerQueryDTO): Customer
 
     @Mappings(
-        Mapping(source = "channel.id", target = "channelId"),
+        Mapping(source = "createdBy.id", target = "createdById"),
         Mapping(source = "sale.id", target = "saleId")
     )
     abstract fun toVO(customer: Customer): CustomerVO
