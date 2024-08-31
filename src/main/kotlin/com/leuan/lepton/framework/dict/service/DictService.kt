@@ -10,6 +10,7 @@ import com.leuan.lepton.framework.dict.controller.vo.DictVO
 import com.leuan.lepton.framework.dict.dal.Dict
 import com.leuan.lepton.framework.dict.dal.DictRepository
 import com.leuan.lepton.framework.dict.dal.QDict
+import com.leuan.lepton.framework.dict.dal.QDictItem
 import com.leuan.lepton.framework.dict.mapping.DictMapper
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
@@ -54,9 +55,13 @@ class DictService {
      * @return [List<DictVO>]
      */
     fun list(queryDTO: DictQueryDTO): List<DictVO> {
+        val qDictItem = QDictItem.dictItem
         return jpaQueryFactory
             .selectFrom(qDict)
-            .buildExpressions(queryDTO)
+            .join(qDict.items,qDictItem)
+            .fetchJoin()
+            .buildExpressions(queryDTO, sort = false)
+            .orderBy(qDictItem.sort.asc())
             .fetch()
             .map(dictMapper::toVO)
     }

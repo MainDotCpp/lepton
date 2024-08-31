@@ -9,11 +9,15 @@ const moduleMapping = {
         package: 'com.leuan.lepton.customer',
         menuId: 2
     },
-
+    order: {
+        name: 'order',
+        package: 'com.leuan.lepton.order',
+        menuId: 139
+    },
     collector: {
         name: 'collector',
         package: 'com.leuan.lepton.collector',
-        menuId: 2
+        menuId: 138
     }
 }
 export default function Plopfile(plop) {

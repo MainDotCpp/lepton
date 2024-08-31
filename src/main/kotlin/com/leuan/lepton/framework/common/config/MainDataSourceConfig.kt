@@ -22,7 +22,11 @@ import javax.sql.DataSource
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager",
-    basePackages = ["com.leuan.lepton.framework", "com.leuan.lepton.customer"]
+    basePackages = [
+        "com.leuan.lepton.framework",
+        "com.leuan.lepton.customer",
+        "com.leuan.lepton.order"
+    ]
 )
 class MainDataSourceConfig {
 
@@ -44,7 +48,8 @@ class MainDataSourceConfig {
             )
             .packages(
                 "com.leuan.lepton.framework",
-                "com.leuan.lepton.customer"
+                "com.leuan.lepton.customer",
+                "com.leuan.lepton.order"
             )
             .persistenceUnit("mainUnit").build()
     }

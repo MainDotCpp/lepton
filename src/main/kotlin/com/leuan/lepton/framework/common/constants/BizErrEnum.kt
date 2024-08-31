@@ -22,4 +22,8 @@ enum class BizErrEnum(val code: Int, val message: String) {
     // --------------------- 客资模块 ---------------------
     CUSTOMER_NOT_FOUND(3002, "客资不存在"),
     CHANNEL_NOT_FOUND(3003, "渠道不存在"),
+
+    // --------------------- 订单模块 ---------------------
+    ORDER_NOT_FOUND(4001, "订单不存在"),
+    GOODS_NOT_FOUND(4002, "商品不存在"),
 }

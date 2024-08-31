@@ -26,5 +26,5 @@ class Dict {
 
 
     @OneToMany(mappedBy = "dict", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var items: MutableSet<DictItem> = mutableSetOf()
+    var items: MutableList<DictItem> = mutableListOf()
 }

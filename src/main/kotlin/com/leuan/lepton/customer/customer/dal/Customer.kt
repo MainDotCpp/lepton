@@ -44,12 +44,16 @@ class Customer : BaseAuditEntity() {
     @Schema(description = "来源", nullable = false)
     @Column(name = "source", nullable = false)
     @ColumnDefault("''")
-    var source:String = ""
+    var source: String = ""
 
     @Comment("跟进状态")
     @Schema(description = "跟进状态")
     @Column(name = "follow_status")
     var followStatus: String? = null
+
+    @Comment("备注")
+    @Column(name = "remark")
+    var remark: String? = null
 
     @Comment("销售")
     @ManyToOne

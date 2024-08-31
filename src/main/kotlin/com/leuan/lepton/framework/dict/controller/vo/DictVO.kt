@@ -9,5 +9,5 @@ import java.io.Serializable
  */
 @NoArgsConstructor
 data class DictVO(
-    var id: Long, var type: String = "", var name: String = "", var items: MutableSet<DictItem> = mutableSetOf()
+    var id: Long, var type: String = "", var name: String = "", var items: MutableList<DictItem> = mutableListOf()
 ) : Serializable

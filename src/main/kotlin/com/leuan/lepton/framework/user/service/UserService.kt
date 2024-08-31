@@ -192,6 +192,7 @@ class UserService {
                 )
             )
             .from(qUser)
+            .where(qUser.tenants.any().id.eq(getThreadContext().tenantId))
             .fetch()
     }
 
