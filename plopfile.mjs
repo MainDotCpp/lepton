@@ -8,6 +8,12 @@ const moduleMapping = {
         name: 'customer',
         package: 'com.leuan.lepton.customer',
         menuId: 2
+    },
+
+    collector: {
+        name: 'collector',
+        package: 'com.leuan.lepton.collector',
+        menuId: 2
     }
 }
 export default function Plopfile(plop) {

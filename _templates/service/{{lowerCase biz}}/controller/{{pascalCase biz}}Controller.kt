@@ -29,7 +29,7 @@ class {{pascalCase biz}}Controller {
 
     @GetMapping("page")
     @Operation(summary = "分页查询{{comment}}列表")
-    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{lowerCase biz}}:create')")
+    @PreAuthorize("hasAnyAuthority('{{module.name}}:{{lowerCase biz}}:menu')")
     fun page(queryDTO: {{pascalCase biz}}QueryDTO) = {{camelCase biz}}Service.page(queryDTO)
 
     @PostMapping("save")

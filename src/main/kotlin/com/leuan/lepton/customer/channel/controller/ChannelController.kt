@@ -29,7 +29,7 @@ class ChannelController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询客资渠道列表")
-    @PreAuthorize("hasAnyAuthority('customer:channel:create')")
+    @PreAuthorize("hasAnyAuthority('customer:channel:menu')")
     fun page(queryDTO: ChannelQueryDTO) = channelService.page(queryDTO)
 
     @PostMapping("save")

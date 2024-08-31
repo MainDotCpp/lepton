@@ -36,7 +36,7 @@ dependencies {
 
     // DB 相关
     implementation("org.postgresql:postgresql")
-    implementation("mysql:mysql-connector-java")
+    runtimeOnly("com.mysql:mysql-connector-j")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
     implementation(group = "com.querydsl", name = "querydsl-jpa", version = "5.1.0", classifier = "jakarta")

@@ -1,12 +1,28 @@
 spring:
+  # 主数据源
   datasource:
-    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:postgresql://d3-cf.com:5432/fision?timezone=UTF-8
-    username: fision
-    password: fision_admin
+    main:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://d3-cf.com:5432/fision?timezone=UTF-8
+      username: fision
+      password: fision_admin
+    collector:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://d3-cf.com:3306/lepton_collector?timezone=UTF-8
+      username: lepton_collector
+      password: lepton_collector
+
   jpa:
-    hibernate:
-      ddl-auto: update
+    main:
+      database: postgresql
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        ddl-auto: update
+    collector:
+      database: mysql
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+      hibernate:
+          ddl-auto: update
   data:
     redis:
       address: redis://43.136.92.103:6379

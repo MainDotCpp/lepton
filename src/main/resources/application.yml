@@ -42,7 +42,7 @@ spring:
     properties:
       hibernate:
         multiTenancy: SCHEMA
-        tenant_identifier_resolver: com.leuan.lepton.common.dal.HibernateTenantResolver
+        tenant_identifier_resolver: com.leuan.lepton.framework.common.dal.HibernateTenantResolver
         enable_lazy_load_no_trans: true
 
 

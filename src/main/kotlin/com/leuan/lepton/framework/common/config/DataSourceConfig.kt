@@ -1,5 +1,6 @@
 package com.leuan.lepton.framework.common.config
 
+import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
@@ -12,18 +13,16 @@ import javax.sql.DataSource
 @Configuration
 class DataSourceConfig {
 
-    @Bean(name = ["mainDataSource"])
-    @Qualifier("mainDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.primary")
     @Primary
-    fun primaryDataSource(): DataSource {
+    @Bean("mainDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.main")
+    fun mainDataSource(): DataSource{
         return DataSourceBuilder.create().build()
     }
 
-    @Bean(name = ["collectorDataSource"])
-    @Qualifier("collectorDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.second")
-    fun secondDataSource(): DataSource {
+    @Bean("collectorDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.collector")
+    fun collectorDataSource(): DataSource {
         return DataSourceBuilder.create().build()
     }
 }
