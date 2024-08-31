@@ -29,7 +29,7 @@ class RoleController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询角色列表")
-    @PreAuthorize("hasAnyAuthority('system:role:create')")
+    @PreAuthorize("hasAnyAuthority('system:role:menu')")
     fun page(queryDTO: RoleQueryDTO = RoleQueryDTO()) = roleService.page(queryDTO)
 
     @PostMapping("save")

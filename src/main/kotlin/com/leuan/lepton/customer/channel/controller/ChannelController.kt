@@ -24,7 +24,7 @@ class ChannelController {
 
     @GetMapping("list")
     @Operation(summary = "查询客资渠道列表")
-    @PreAuthorize("hasAnyAuthority('customer:channel:menu')")
+    @PreAuthorize("hasAnyAuthority('customer:channel:menu','customer:customer:menu')")
     fun list(queryDTO: ChannelQueryDTO) = channelService.list(queryDTO)
 
     @GetMapping("page")

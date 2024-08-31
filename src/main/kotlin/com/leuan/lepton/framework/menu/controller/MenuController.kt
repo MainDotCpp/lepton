@@ -29,7 +29,7 @@ class MenuController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询菜单列表")
-    @PreAuthorize("hasAnyAuthority('system:menu:create')")
+    @PreAuthorize("hasAnyAuthority('system:menu:menu')")
     fun page(queryDTO: MenuQueryDTO = MenuQueryDTO()) = menuService.page(queryDTO)
 
     @PostMapping("save")

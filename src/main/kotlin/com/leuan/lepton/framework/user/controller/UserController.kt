@@ -29,7 +29,7 @@ class UserController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询用户列表")
-    @PreAuthorize("hasAnyAuthority('system:user:create')")
+    @PreAuthorize("hasAnyAuthority('system:user:menu')")
     fun page(queryDTO: UserQueryDTO = UserQueryDTO()) = userService.page(queryDTO)
 
     @PostMapping("save")

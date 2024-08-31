@@ -28,7 +28,7 @@ class XhsNoteController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询小红书笔记列表")
-//    @PreAuthorize("hasAnyAuthority('collector:xhsnote:create')")
+//    @PreAuthorize("hasAnyAuthority('collector:xhsnote:menu')")
     fun page(queryDTO: XhsNoteQueryDTO) = xhsNoteService.page(queryDTO)
 
     @PostMapping("save")

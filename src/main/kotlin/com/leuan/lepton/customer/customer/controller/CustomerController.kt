@@ -29,7 +29,7 @@ class CustomerController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询客资列表")
-    @PreAuthorize("hasAnyAuthority('customer:customer:create')")
+    @PreAuthorize("hasAnyAuthority('customer:customer:menu')")
     fun page(queryDTO: CustomerQueryDTO) = customerService.page(queryDTO)
 
     @PostMapping("save")

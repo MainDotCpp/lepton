@@ -30,7 +30,7 @@ class TenantController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询租户列表")
-    @PreAuthorize("hasAnyAuthority('system:tenant:create')")
+    @PreAuthorize("hasAnyAuthority('system:tenant:menu')")
     fun page(queryDTO: TenantQueryDTO) = tenantService.page(queryDTO)
 
     @PostMapping("save")

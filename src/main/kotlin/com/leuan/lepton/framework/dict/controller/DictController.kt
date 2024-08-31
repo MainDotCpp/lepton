@@ -28,7 +28,7 @@ class DictController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询字典列表")
-    @PreAuthorize("hasAnyAuthority('system:dict:create')")
+    @PreAuthorize("hasAnyAuthority('system:dict:menu')")
     fun page(queryDTO: DictQueryDTO) = dictService.page(queryDTO)
 
     @PostMapping("save")

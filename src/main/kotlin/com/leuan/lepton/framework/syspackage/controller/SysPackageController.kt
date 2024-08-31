@@ -29,7 +29,7 @@ class SysPackageController {
 
     @GetMapping("page")
     @Operation(summary = "分页查询系统套餐列表")
-    @PreAuthorize("hasAnyAuthority('system:sysPackage:create')")
+    @PreAuthorize("hasAnyAuthority('system:sysPackage:menu')")
     fun page(queryDTO: SysPackageQueryDTO = SysPackageQueryDTO()) = sysPackageService.page(queryDTO)
 
     @PostMapping("save")
