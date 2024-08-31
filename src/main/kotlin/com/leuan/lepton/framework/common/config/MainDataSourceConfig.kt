@@ -2,6 +2,8 @@ package com.leuan.lepton.framework.common.config
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
@@ -24,20 +26,26 @@ import javax.sql.DataSource
 )
 class MainDataSourceConfig {
 
-    @Bean
     @Primary
+    @Bean
     fun entityManagerFactory(
-        mainDataSource: DataSource,
-        mainJpaProperties: JpaProperties,
-        builder: EntityManagerFactoryBuilder
+        dataSource: DataSource,
+        collectorJpaProperties: JpaProperties,
+        builder: EntityManagerFactoryBuilder,
+        hibernateProperties: HibernateProperties
     ): LocalContainerEntityManagerFactoryBean {
         return builder // 设置数据源
-            .dataSource(mainDataSource) // 设置jpa配置
-            .properties(mainJpaProperties.properties) // 设置实体包名
+            .dataSource(dataSource)
+            .properties(
+                hibernateProperties.determineHibernateProperties(
+                    collectorJpaProperties.properties,
+                    HibernateSettings()
+                )
+            )
             .packages(
                 "com.leuan.lepton.framework",
                 "com.leuan.lepton.customer"
-            ) // 设置持久化单元名，用于@PersistenceContext注解获取EntityManager时指定数据源
+            )
             .persistenceUnit("mainUnit").build()
     }
 
@@ -49,7 +57,8 @@ class MainDataSourceConfig {
 
     @Primary
     @Bean
-    fun transactionManager(entityManagerFactory: EntityManagerFactory?): PlatformTransactionManager {
-        return JpaTransactionManager(entityManagerFactory!!)
+    fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
+        return JpaTransactionManager(entityManagerFactory)
     }
+
 }

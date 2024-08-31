@@ -10,7 +10,7 @@ data class UserSaveDTO(
     val id: Long? = null,
     val name: String? = null,
     val phone: String? = null,
-    val password: String? = null,
+    var password: String? = null,
     val avatar: String = "",
     val roleIds: MutableSet<Long> = mutableSetOf()
 )

@@ -18,5 +18,5 @@ data class CustomerVO(
     var saleId: Long = 0,
     var source: String = "",
     var createdAt: Date = Date(),
-    var createdById: Long = 0
+    var createdById: Long = 0, var followStatus: String? = null
 ) : Serializable

@@ -1,16 +1,17 @@
 package com.leuan.lepton.customer.customer.service
 
+import com.leuan.lepton.customer.customer.controller.dto.CustomerQueryDTO
+import com.leuan.lepton.customer.customer.controller.dto.CustomerSaveDTO
+import com.leuan.lepton.customer.customer.controller.vo.CustomerVO
+import com.leuan.lepton.customer.customer.dal.Customer
+import com.leuan.lepton.customer.customer.dal.CustomerRepository
+import com.leuan.lepton.customer.customer.dal.QCustomer
+import com.leuan.lepton.customer.customer.mapping.CustomerMapper
 import com.leuan.lepton.framework.common.constants.BizErrEnum
 import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
 import com.leuan.lepton.framework.common.utils.buildExpressions
-import com.leuan.lepton.customer.customer.controller.dto.CustomerQueryDTO
-import com.leuan.lepton.customer.customer.controller.dto.CustomerSaveDTO
-import com.leuan.lepton.customer.customer.controller.vo.CustomerVO
-import com.leuan.lepton.customer.customer.dal.QCustomer
-import com.leuan.lepton.customer.customer.dal.Customer
-import com.leuan.lepton.customer.customer.dal.CustomerRepository
-import com.leuan.lepton.customer.customer.mapping.CustomerMapper
+import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
@@ -47,6 +48,16 @@ class CustomerService {
         return customerMapper.toVO(entity)
     }
 
+    fun customWhere(queryDTO: CustomerQueryDTO): Array<BooleanExpression?> {
+        return arrayOf(
+            queryDTO.keywords?.let {
+                qCustomer.name.like("%$it%")
+                    .or(qCustomer.phone.like("%$it%"))
+                    .or(qCustomer.wechat.like("%$it%"))
+            }
+        )
+    }
+
 
     /**
      * 列表
@@ -56,7 +67,9 @@ class CustomerService {
     fun list(queryDTO: CustomerQueryDTO): List<CustomerVO> {
         return jpaQueryFactory
             .selectFrom(qCustomer)
-            .buildExpressions(queryDTO)
+            .buildExpressions(queryDTO) {
+                customWhere(queryDTO)
+            }
             .fetch()
             .map(customerMapper::toVO)
     }
@@ -70,7 +83,9 @@ class CustomerService {
         val pageDTO = PageDTO<CustomerVO>(queryDTO)
         val query = jpaQueryFactory
             .selectFrom(qCustomer)
-            .buildExpressions(queryDTO)
+            .buildExpressions(queryDTO) {
+                customWhere(queryDTO)
+            }
             .offset(pageDTO.offset)
             .limit(pageDTO.pageSize)
         pageDTO.total =

@@ -15,5 +15,8 @@ data class CustomerSaveDTO(
     val wechat: String? = null,
     val channelId: Long = 0,
     val photoType: String = "",
-    val saleId: Long = 0, val source: String = ""
+    val saleId: Long = 0,
+    val source: String = "",
+    val createdById: Long? = null,
+    val followStatus: String? = null,
 )

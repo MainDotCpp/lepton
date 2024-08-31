@@ -3,6 +3,7 @@ package com.leuan.lepton.framework.common.utils
 import com.leuan.lepton.framework.common.dal.annotations.QueryField
 import com.leuan.lepton.framework.common.dal.annotations.QueryMethod
 import com.leuan.lepton.framework.common.http.BaseQueryDTO
+import com.leuan.lepton.framework.common.log.logDebug
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -10,7 +11,6 @@ import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotations
-
 
 
 inline fun <T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
@@ -24,7 +24,8 @@ inline fun <T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
     val fields = queryDTO.javaClass.kotlin.declaredMemberProperties
     // 构造查询条件
     fields.forEach { field ->
-        val queryAnno = field.findAnnotations(QueryField::class).firstOrNull() ?: QueryField(field.name)
+        val queryAnno = field.findAnnotations(QueryField::class).firstOrNull() ?: return@forEach
+        logDebug("queryAnno: ${field.name}")
         val value = field.getValue(queryDTO, field) as Collection<Comparable<*>>? ?: return@forEach
         if (value.isEmpty()) return@forEach
         val path = Expressions.comparablePath(queryAnno.type.java, queryAnno.fieldName)
@@ -43,7 +44,7 @@ inline fun <T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
 
     // 构造排序条件
     if (sort) {
-        this.orderBy(OrderSpecifier(Order.DESC, Expressions.path(Long::class.java, "id")))
+        logDebug("sort: ${queryDTO.sorter}")
         queryDTO.sorter?.let { sorter ->
             sorter.forEach { it ->
                 val (key, value) = it.split("_")
@@ -54,6 +55,7 @@ inline fun <T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
                 }
             }
         }
+        this.orderBy(OrderSpecifier(Order.DESC, Expressions.path(Long::class.java, "id")))
     }
     return this
 }

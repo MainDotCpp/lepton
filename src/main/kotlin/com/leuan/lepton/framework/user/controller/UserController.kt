@@ -51,6 +51,7 @@ class UserController {
     @Operation(summary = "获取用户信息")
     fun userInfo() = userService.getUserInfo()
 
-    @GetMapping("test")
-    fun test() = userService.test()
+    @GetMapping("userOptions")
+    @Operation(summary = "获取用户选项")
+    fun userOptions() = userService.getUserOptions()
 }

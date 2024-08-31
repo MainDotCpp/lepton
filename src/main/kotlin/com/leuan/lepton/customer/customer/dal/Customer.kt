@@ -46,6 +46,11 @@ class Customer : BaseAuditEntity() {
     @ColumnDefault("''")
     var source:String = ""
 
+    @Comment("跟进状态")
+    @Schema(description = "跟进状态")
+    @Column(name = "follow_status")
+    var followStatus: String? = null
+
     @Comment("销售")
     @ManyToOne
     @JoinColumn(name = "sales_id")

@@ -6,14 +6,17 @@ import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
 import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.common.utils.cache
+import com.leuan.lepton.framework.tenant.dal.Tenant
 import com.leuan.lepton.framework.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.framework.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.framework.user.controller.vo.UserInfoVO
+import com.leuan.lepton.framework.user.controller.vo.UserOptionsVO
 import com.leuan.lepton.framework.user.controller.vo.UserVO
 import com.leuan.lepton.framework.user.dal.QUser
 import com.leuan.lepton.framework.user.dal.User
 import com.leuan.lepton.framework.user.dal.UserRepository
 import com.leuan.lepton.framework.user.mapping.UserMapper
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -61,6 +64,7 @@ class UserService {
      */
     private fun buildExpressions(queryDTO: UserQueryDTO) = arrayOf(
         queryDTO.id?.let { qUser.id.eq(it) },
+        qUser.tenants.any().id.eq(getThreadContext().tenantId),
     )
 
     /**
@@ -108,19 +112,24 @@ class UserService {
             userRepository.findById(it).orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
         } ?: User()
 
+
         // 校验手机号是否重复
-        if (userRepository.exists(qUser.phone.eq(userSaveDTO.phone))) {
+        if (entity.phone != userSaveDTO.phone && userRepository.exists(qUser.phone.eq(userSaveDTO.phone))) {
             throw BizErr(BizErrEnum.USER_PHONE_EXIST)
         }
 
         // 密码加密
         if (userSaveDTO.password != null) {
-            entity.password = passwordEncoder.encode(userSaveDTO.password)
+            userSaveDTO.password = passwordEncoder.encode(userSaveDTO.password)
         }
 
 
         userMapper.partialUpdate(userSaveDTO, entity)
         userRepository.save(entity)
+
+        // 添加租户
+        if (entity.tenants.none { it.id == getThreadContext().tenantId })
+            entity.tenants.add(Tenant().apply { id = getThreadContext().tenantId })
 
         // 更新角色
         return userMapper.toVO(entity)
@@ -168,6 +177,20 @@ class UserService {
     fun test(): Any {
         return jpaQueryFactory
 
+            .from(qUser)
+            .fetch()
+    }
+
+    fun getUserOptions(): MutableList<UserOptionsVO>? {
+        return jpaQueryFactory
+            .select(
+                Projections.fields(
+                    UserOptionsVO::class.java,
+                    qUser.id,
+                    qUser.name,
+                    qUser.avatar
+                )
+            )
             .from(qUser)
             .fetch()
     }

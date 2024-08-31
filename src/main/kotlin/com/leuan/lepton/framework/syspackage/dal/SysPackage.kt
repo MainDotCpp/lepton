@@ -22,7 +22,7 @@ class SysPackage {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "sys_package_menu",
-        joinColumns = [JoinColumn(name = "sysPackage_id")],
+        joinColumns = [JoinColumn(name = "sys_package_id")],
         inverseJoinColumns = [JoinColumn(name = "menu_id")]
     )
     var menus: MutableSet<Menu> = mutableSetOf()

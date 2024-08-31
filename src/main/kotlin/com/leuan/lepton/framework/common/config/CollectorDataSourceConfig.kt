@@ -1,6 +1,5 @@
 package com.leuan.lepton.framework.common.config
 
-import com.leuan.lepton.collector.xhsnote.dal.XhsNote
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
@@ -50,8 +49,8 @@ class CollectorDataSourceConfig {
     }
 
     @Bean(name = ["collectorJpaQueryFactory"])
-    fun collectorJpaQueryFactory(@Qualifier("collectorEntityManager") collectorEntityManager: EntityManager): JPAQueryFactory {
-        return JPAQueryFactory(collectorEntityManager)
+    fun jpaQueryFactory(@Qualifier("collectorEntityManager") entityManager: EntityManager): JPAQueryFactory {
+        return JPAQueryFactory(entityManager)
     }
 
 }

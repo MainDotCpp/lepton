@@ -23,7 +23,8 @@ abstract class CustomerMapper {
 
     @Mappings(
         Mapping(source = "createdBy.id", target = "createdById"),
-        Mapping(source = "sale.id", target = "saleId")
+        Mapping(source = "sale.id", target = "saleId"),
+        Mapping(source = "channel.id", target = "channelId"),
     )
     abstract fun toVO(customer: Customer): CustomerVO
 

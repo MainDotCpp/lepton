@@ -34,6 +34,11 @@ class DictItem {
     @ColumnDefault("true")
     var enabled: Boolean = true
 
+    @Comment("是否默认")
+    @Column(name = "`default`", nullable = false)
+    @ColumnDefault("false")
+    var default: Boolean = false
+
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "dict_id")
