@@ -18,6 +18,7 @@ enum class BizErrEnum(val code: Int, val message: String) {
     SYS_PACKAGE_NOT_FOUND(1005, "系统套餐不存在"),
     USER_PHONE_EXIST(1006, "手机号已存在"),
     DICT_NOT_FOUND(1007, "字典不存在"),
+    CONFIG_NOT_FOUND(1008, "配置不存在"),
 
     // --------------------- 客资模块 ---------------------
     CUSTOMER_NOT_FOUND(3002, "客资不存在"),

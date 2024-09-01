@@ -14,7 +14,11 @@ class ChatBotUtils {
     @Resource
     private lateinit var restTemplate: RestTemplate
 
-    fun sendNotify(url: String, message: String) {
+    fun sendNotify(url: String?, message: String) {
+        if (url == null) {
+            logInfo("url未配置，取消发送")
+            return
+        }
         when {
             url.startsWith("https://qyapi.weixin.qq.com") -> sendNotifyByWeCom(url, message)
             url.startsWith("https://open.feishu.cn") -> sendNotifyByFeiShu(url, message)

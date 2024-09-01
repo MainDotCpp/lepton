@@ -41,10 +41,7 @@ dependencies {
     implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
     implementation(group = "com.querydsl", name = "querydsl-jpa", version = "5.1.0", classifier = "jakarta")
     kapt(group = "com.querydsl", name = "querydsl-apt", version = "5.1.0", classifier = "jakarta")
-    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
-    implementation("org.hibernate.orm:hibernate-core:6.5.2.Final")
-    // https://mvnrepository.com/artifact/org.hibernate/hibernate-annotations
-    implementation("org.hibernate:hibernate-annotations:3.5.6-Final")
+
 
 
     // jboss-logging
