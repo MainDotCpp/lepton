@@ -12,5 +12,20 @@ class CustomerQueryDTO : BaseQueryDTO() {
     @Schema(description = "渠道ID")
     var channelId: List<Long>? = null
 
+    @QueryField(fieldName = "source")
+    var source: List<String>? = null
+
+    @QueryField(fieldName = "photoType")
+    var photoType:List<String>? = null
+
+    @QueryField(fieldName = "followStatus")
+    var followStatus: List<String>? = null
+
+    @QueryField(fieldName = "sale.id")
+    var saleId: List<Long>? = null
+
+    @QueryField(fieldName = "createdBy.id")
+    var createdById:List<Long>? = null
+
     var keywords: String? = null
 }

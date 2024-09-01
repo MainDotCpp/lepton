@@ -132,7 +132,7 @@ class ConfigService {
             .where(qConfig.type.eq(ConfigType.GLOBAL))
             .fetchOne()!!.globalConfig
         config.tenantConfig = jpaQueryFactory.selectFrom(qConfig)
-            .where(qConfig.type.eq(ConfigType.TENANT))
+            .where(qConfig.type.eq(ConfigType.TENANT), qConfig.tenantId.eq(getThreadContext().tenantId))
             .fetchOne()?.tenantConfig ?: TenantConfig()
         return config
     }
