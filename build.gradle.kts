@@ -41,6 +41,14 @@ dependencies {
     implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
     implementation(group = "com.querydsl", name = "querydsl-jpa", version = "5.1.0", classifier = "jakarta")
     kapt(group = "com.querydsl", name = "querydsl-apt", version = "5.1.0", classifier = "jakarta")
+    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
+    implementation("org.hibernate.orm:hibernate-core:6.5.2.Final")
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-annotations
+    implementation("org.hibernate:hibernate-annotations:3.5.6-Final")
+
+
+    // jboss-logging
+    implementation("org.jboss.logging:jboss-logging:3.4.2.Final")
 
     // 缓存
     implementation("org.redisson:redisson-spring-boot-starter:3.33.0")
@@ -83,6 +91,58 @@ kotlin {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
 }
+
+//layout.buildDirectory = file("build")
+
+
+task("copyJar") {
+    doLast {
+        // 将依赖的jar包复制到libs目录下
+        copy {
+            from(configurations.runtimeClasspath.get().filter { it.name.endsWith(".jar") })
+            into(layout.buildDirectory.dir("app/lib"))
+        }
+    }
+}
+
+task("copyResources") {
+    doLast {
+        copy {
+            from("src/main/resources") {
+                include("*")
+            }
+            into(layout.buildDirectory.dir("app"))
+        }
+    }
+}
+
+
+tasks.bootJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    excludes.add("*.jar")
+
+    // 将依赖的jar包复制到libs目录下
+    dependsOn("copyJar")
+    dependsOn("copyResources")
+
+    manifest {
+        attributes(
+            mapOf(
+                "Manifest-Version" to "1.0",
+                "Class-Path" to configurations.runtimeClasspath.get().filter { it.name.endsWith(".jar") }
+                    .joinToString(" ") { "lib/${it.name}" }
+            ))
+    }
+    doLast {
+        // 将输出的jar包复制到libs目录下
+        copy {
+            from(layout.buildDirectory.dir("libs"))
+            into(layout.buildDirectory.dir("app"))
+        }
+    }
+}
+
+
 
 tasks.withType<Test> {
     useJUnitPlatform()
