@@ -10,6 +10,7 @@ import java.io.Serializable
 data class CustomerNotifyBO(
     var id: Long = 0,
     var createdByName: String? = null,
+    var channelName: String? = null,
     var saleName:String? = null,
     var name: String = "",
     var phone: String? = null,

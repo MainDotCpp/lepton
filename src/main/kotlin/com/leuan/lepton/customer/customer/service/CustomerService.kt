@@ -130,9 +130,6 @@ class CustomerService {
     }
 
     fun sendNotify(customerId: Long) {
-        val photoTypeDict = QDictItem("photoTypeDict")
-        val sourceDict = QDictItem("sourceDict")
-        val followStatusDict = QDictItem("followStatusDict")
         val customer = jpaQueryFactory
             .select(
                 Projections.fields(
@@ -142,23 +139,13 @@ class CustomerService {
                     qCustomer.wechat,
                     qCustomer.phone,
                     qCustomer.remark,
-                    photoTypeDict.item.`as`("photoType"),
-                    sourceDict.item.`as`("source"),
-                    followStatusDict.item.`as`("followStatus"),
+                    qCustomer.channel.name.`as`(CustomerNotifyBO::channelName.name),
                     qCustomer.createdBy.name.`as`("createdByName"),
                     qCustomer.sale.name.`as`("saleName"),
                     qCustomer.brand.name.`as`(CustomerNotifyBO::brandName.name)
                 )
             )
             .from(qCustomer)
-            .leftJoin(photoTypeDict)
-            .on(photoTypeDict.dict.type.eq("customer:photo_type").and(qCustomer.photoType.eq(photoTypeDict.value)))
-            .leftJoin(sourceDict)
-            .on(sourceDict.dict.type.eq("customer:source").and(qCustomer.source.eq(sourceDict.value)))
-            .leftJoin(followStatusDict).on(
-                followStatusDict.dict.type.eq("customer:follow_up_status")
-                    .and(qCustomer.followStatus.eq(followStatusDict.value))
-            )
             .where(qCustomer.id.eq(customerId))
             .fetchOne()!!
 
@@ -183,19 +170,14 @@ class CustomerService {
 
         val tenantConfig = configService.getConfig().tenantConfig
         val message = """
-            [新客资]
+            【客资来了!】
             
             编号: ${tenantConfig.customerTarget}-${monthCustomerCount}-${dayCustomerCount}
-            品牌：${customer.brandName}
-            姓名：${customer.name}
-            电话：${customer.phone ?: ""}
-            微信：${customer.wechat ?: ""}
-            来源：${customer.source}
-            拍摄类型: ${customer.photoType}
-            跟进状态: ${customer.followStatus ?: ""}
-            
-            销售: ${customer.saleName ?: ""}
-            录入人：${customer.createdByName ?: ""}
+            品牌: ${customer.brandName}
+            渠道: ${customer.channelName}
+            销售人员: ${customer.saleName ?: ""}
+            微信id：${customer.wechat ?: ""}
+            手机号：${customer.phone ?: ""}
             备注：${customer.remark ?: ""}
         """.trimIndent()
         tenantConfig.customerNotifyUrl
