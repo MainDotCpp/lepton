@@ -148,6 +148,7 @@ class CustomerService {
                     followStatusDict.item.`as`("followStatus"),
                     qCustomer.createdBy.name.`as`("createdByName"),
                     qCustomer.sale.name.`as`("saleName"),
+                    qCustomer.brand.name.`as`(CustomerNotifyBO::brandName.name)
                 )
             )
             .from(qCustomer)
@@ -161,6 +162,7 @@ class CustomerService {
         val message = """
             [新客资]
             
+            品牌：${customer.brandName}
             姓名：${customer.name}
             电话：${customer.phone ?: ""}
             微信：${customer.wechat ?: ""}

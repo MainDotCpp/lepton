@@ -1,5 +1,6 @@
 package com.leuan.lepton.customer.customer.dal
 
+import com.leuan.lepton.customer.brand.dal.Brand
 import com.leuan.lepton.customer.channel.dal.Channel
 import com.leuan.lepton.framework.common.dal.BaseAuditEntity
 import com.leuan.lepton.framework.user.dal.User
@@ -59,4 +60,8 @@ class Customer : BaseAuditEntity() {
     @ManyToOne
     @JoinColumn(name = "sales_id")
     var sale: User = User()
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    var brand: Brand? = null
 }

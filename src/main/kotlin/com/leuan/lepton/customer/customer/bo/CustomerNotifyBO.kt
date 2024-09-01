@@ -19,4 +19,5 @@ data class CustomerNotifyBO(
     var followStatus: String? = null,
     var remark: String? = null,
     var count: Int = 5,
+    var brandName: String = "",
 ) : Serializable

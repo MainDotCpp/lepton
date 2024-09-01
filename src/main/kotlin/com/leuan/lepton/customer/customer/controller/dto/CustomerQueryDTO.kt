@@ -16,7 +16,7 @@ class CustomerQueryDTO : BaseQueryDTO() {
     var source: List<String>? = null
 
     @QueryField(fieldName = "photoType")
-    var photoType:List<String>? = null
+    var photoType: List<String>? = null
 
     @QueryField(fieldName = "followStatus")
     var followStatus: List<String>? = null
@@ -25,7 +25,12 @@ class CustomerQueryDTO : BaseQueryDTO() {
     var saleId: List<Long>? = null
 
     @QueryField(fieldName = "createdBy.id")
-    var createdById:List<Long>? = null
+    var createdById: List<Long>? = null
+
+    @QueryField(fieldName = "brand.id")
+    var brandId: List<Long>? = null
 
     var keywords: String? = null
+
+
 }

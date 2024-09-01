@@ -13,8 +13,6 @@ import org.mapstruct.*
     uses = [LeptonBaseMapping::class]
 )
 abstract class {{pascalCase biz}}Mapper {
-    abstract fun toEntity({{camelCase biz}}VO: {{pascalCase biz}}VO): {{pascalCase biz}}
-    abstract fun toEntity({{camelCase biz}}QueryDTO: {{pascalCase biz}}QueryDTO): {{pascalCase biz}}
     abstract fun toVO({{camelCase biz}}: {{pascalCase biz}}): {{pascalCase biz}}VO
 
     @InheritConfiguration

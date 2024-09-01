@@ -20,5 +20,5 @@ data class CustomerVO(
     var createdAt: Date = Date(),
     var createdById: Long = 0,
     var followStatus: String? = null,
-    var remark: String? = null,
+    var remark: String? = null, var brandId: Long = 0,
 ) : Serializable
