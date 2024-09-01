@@ -121,7 +121,7 @@ class ConfigService {
                 configRepository.save(it)
             }
 
-        configMapper.partialUpdate(tenantConfig, old.tenantConfig!!)
+        configMapper.partialUpdate(tenantConfig, old.tenantConfig)
         configRepository.save(old)
         return true
     }

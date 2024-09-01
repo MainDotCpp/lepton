@@ -19,6 +19,7 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 /**
  * 订单服务
@@ -134,9 +135,26 @@ class OrderService {
             .on(sourceDict.dict.type.eq("customer:source").and(sourceDict.value.eq(qOrder.customer.source)))
             .where(qOrder.id.eq(orderId))
             .fetchOne()!!
+
+        val currentDate = LocalDate.now()
+        val monthOrderCount = jpaQueryFactory.select(qOrder.id.count())
+            .from(qOrder)
+            .where(qOrder.createdAt.year().eq(currentDate.year), qOrder.createdAt.month().eq(currentDate.monthValue))
+            .fetchOne()!!
+
+        val dayOrderCount = jpaQueryFactory.select(qOrder.id.count())
+            .from(qOrder)
+            .where(
+                qOrder.createdAt.year().eq(currentDate.year),
+                qOrder.createdAt.month().eq(currentDate.monthValue),
+                qOrder.createdAt.dayOfMonth().eq(currentDate.dayOfMonth)
+            )
+            .fetchOne()!!
+        val tenantConfig = configService.getConfig().tenantConfig
         val message = """
             [订单通知]
             
+            编号: ${tenantConfig.orderTarget}-${monthOrderCount}-${dayOrderCount}
             客户姓名：${orderNotifyDTO.customerName}
             客户电话：${orderNotifyDTO.customerPhone ?: ""}
             客户微信：${orderNotifyDTO.customerWechat ?: ""}
@@ -149,7 +167,7 @@ class OrderService {
         """.trimIndent()
 
         chatBotUtils.sendNotify(
-            configService.getConfig().tenantConfig?.orderNotifyUrl,
+            tenantConfig?.orderNotifyUrl,
             message
         )
     }

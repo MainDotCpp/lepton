@@ -17,9 +17,9 @@ class Config {
     @Enumerated(EnumType.STRING)
     var type: ConfigType =  ConfigType.GLOBAL
 
-    var globalConfig: GlobalConfig? = null
+    var globalConfig: GlobalConfig =  GlobalConfig()
 
-    var tenantConfig:TenantConfig? = null
+    var tenantConfig:TenantConfig = TenantConfig()
 
     var tenantId:Long? = null
 

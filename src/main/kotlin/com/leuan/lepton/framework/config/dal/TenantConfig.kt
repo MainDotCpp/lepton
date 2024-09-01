@@ -6,7 +6,9 @@ import lombok.Data
 @Data
 @Embeddable
 class TenantConfig {
-
+    var customerTarget: Int = 0
     var customerNotifyUrl: String? = null
-    var orderNotifyUrl:String? = null
+
+    var orderTarget: Int = 0
+    var orderNotifyUrl: String? = null
 }

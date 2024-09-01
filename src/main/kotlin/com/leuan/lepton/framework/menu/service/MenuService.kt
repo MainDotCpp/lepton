@@ -16,6 +16,7 @@ import com.leuan.lepton.framework.menu.dal.Menu
 import com.leuan.lepton.framework.menu.dal.MenuRepository
 import com.leuan.lepton.framework.menu.dal.QMenu
 import com.leuan.lepton.framework.menu.mapping.MenuMapper
+import com.leuan.lepton.framework.user.service.UserService
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
@@ -34,6 +35,9 @@ class MenuService {
 
     @Resource
     private lateinit var menuRepository: MenuRepository
+
+    @Resource
+    private lateinit var userService: UserService
 
     @Resource
     private lateinit var jpaQueryFactory: JPAQueryFactory
@@ -120,8 +124,9 @@ class MenuService {
     }
 
     fun getMenuTree(): MutableList<Tree<Long>>? {
+        val userInfo = userService.getUserInfo()
         val menus = jpaQueryFactory.selectFrom(QMenu.menu)
-            .where(QMenu.menu.hidden.eq(false))
+            .where(QMenu.menu.hidden.eq(false), QMenu.menu.permission.`in`(userInfo.permissions))
             .orderBy(QMenu.menu.id.asc())
             .fetch()
         return getMenuTree(menus)

@@ -11,10 +11,8 @@ import com.leuan.lepton.customer.customer.mapping.CustomerMapper
 import com.leuan.lepton.framework.common.constants.BizErrEnum
 import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
-import com.leuan.lepton.framework.common.log.logInfo
 import com.leuan.lepton.framework.common.utils.ChatBotUtils
 import com.leuan.lepton.framework.common.utils.buildExpressions
-import com.leuan.lepton.framework.common.utils.toJson
 import com.leuan.lepton.framework.config.service.ConfigService
 import com.leuan.lepton.framework.dict.dal.QDictItem
 import com.querydsl.core.types.Projections
@@ -22,6 +20,7 @@ import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 /**
  * 客资服务
@@ -152,16 +151,41 @@ class CustomerService {
                 )
             )
             .from(qCustomer)
-            .leftJoin(photoTypeDict).on(photoTypeDict.dict.type.eq("customer:photo_type").and(qCustomer.photoType.eq(photoTypeDict.value)))
-            .leftJoin(sourceDict).on(sourceDict.dict.type.eq("customer:source").and(qCustomer.source.eq(sourceDict.value)))
-            .leftJoin(followStatusDict).on(followStatusDict.dict.type.eq("customer:follow_up_status").and(qCustomer.followStatus.eq(followStatusDict.value)))
+            .leftJoin(photoTypeDict)
+            .on(photoTypeDict.dict.type.eq("customer:photo_type").and(qCustomer.photoType.eq(photoTypeDict.value)))
+            .leftJoin(sourceDict)
+            .on(sourceDict.dict.type.eq("customer:source").and(qCustomer.source.eq(sourceDict.value)))
+            .leftJoin(followStatusDict).on(
+                followStatusDict.dict.type.eq("customer:follow_up_status")
+                    .and(qCustomer.followStatus.eq(followStatusDict.value))
+            )
             .where(qCustomer.id.eq(customerId))
             .fetchOne()!!
-        logInfo("customer:${customer.toJson()}")
 
+        val currentDate = LocalDate.now()
+
+        val monthCustomerCount = jpaQueryFactory.select(qCustomer.id.count())
+            .from(qCustomer)
+            .where(
+                qCustomer.createdAt.year().eq(currentDate.year),
+                qCustomer.createdAt.month().eq(currentDate.monthValue)
+            )
+            .fetchOne()!!
+
+        val dayCustomerCount = jpaQueryFactory.select(qCustomer.id.count())
+            .from(qCustomer)
+            .where(
+                qCustomer.createdAt.year().eq(currentDate.year),
+                qCustomer.createdAt.month().eq(currentDate.monthValue),
+                qCustomer.createdAt.dayOfMonth().eq(currentDate.dayOfMonth)
+            )
+            .fetchOne()!!
+
+        val tenantConfig = configService.getConfig().tenantConfig
         val message = """
             [新客资]
             
+            编号: ${tenantConfig.customerTarget}-${monthCustomerCount}-${dayCustomerCount}
             品牌：${customer.brandName}
             姓名：${customer.name}
             电话：${customer.phone ?: ""}
@@ -174,7 +198,7 @@ class CustomerService {
             录入人：${customer.createdByName ?: ""}
             备注：${customer.remark ?: ""}
         """.trimIndent()
-        configService.getConfig().tenantConfig?.customerNotifyUrl
+        tenantConfig.customerNotifyUrl
             ?.let { chatBotUtils.sendNotify(it, message) }
     }
 
