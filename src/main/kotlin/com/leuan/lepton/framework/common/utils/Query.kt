@@ -1,5 +1,7 @@
 package com.leuan.lepton.framework.common.utils
 
+import cn.hutool.core.date.DateUnit
+import cn.hutool.core.date.DateUtil
 import com.leuan.lepton.framework.common.dal.annotations.QueryField
 import com.leuan.lepton.framework.common.dal.annotations.QueryMethod
 import com.leuan.lepton.framework.common.http.BaseQueryDTO
@@ -9,6 +11,7 @@ import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
+import java.util.Date
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotations
 
@@ -33,7 +36,17 @@ inline fun <T, Q : BaseQueryDTO> JPAQuery<T>.buildExpressions(
             QueryMethod.NOT_IN -> this.where(path.notIn(value))
             QueryMethod.EQ -> this.where(path.eq(value.first()))
             QueryMethod.NE -> this.where(path.ne(value.first()))
-            QueryMethod.BETWEEN -> this.where(path.between(value.first(), value.last()))
+            QueryMethod.BETWEEN -> {
+                if (queryAnno.fieldName == "createdAt") {
+                    // 将ISO字符串转换为时间类型
+                    val start = DateUtil.parseDateTime(value.first().toString())
+                    val end = DateUtil.parseDateTime(value.last().toString())
+                    this.where(path.between(start, end))
+                } else {
+                    this.where(path.between(value.first(), value.last()))
+                }
+            }
+
             QueryMethod.NOT_BETWEEN -> this.where(path.notBetween(value.first(), value.last()))
             QueryMethod.IN -> this.where(path.`in`(value))
         }
