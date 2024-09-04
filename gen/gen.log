@@ -47,3 +47,5 @@ plop order order 订单
 plop order goods 商品
 plop system config 系统设置
 plop customer brand 品牌
+plop collector xhsNodeComment 小红书评论
+plop collector xhsNoteComment 小红书评论

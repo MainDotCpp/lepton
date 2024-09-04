@@ -24,7 +24,7 @@ class BrandController {
 
     @GetMapping("list")
     @Operation(summary = "查询品牌列表")
-    @PreAuthorize("hasAnyAuthority('customer:brand:menu')")
+    @PreAuthorize("hasAnyAuthority('customer:brand:menu','customer:customer:menu')")
     fun list(queryDTO: BrandQueryDTO) = brandService.list(queryDTO)
 
     @GetMapping("page")

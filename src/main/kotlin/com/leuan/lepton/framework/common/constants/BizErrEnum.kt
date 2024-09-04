@@ -27,4 +27,7 @@ enum class BizErrEnum(val code: Int, val message: String) {
     // --------------------- 订单模块 ---------------------
     ORDER_NOT_FOUND(4001, "订单不存在"),
     GOODS_NOT_FOUND(4002, "商品不存在"),
+
+    // --------------------- 收集器模块 ---------------------
+    XHS_NOTE_COMMENT_NOT_FOUND(5001, "小红书评论不存在"),
 }
