@@ -19,5 +19,6 @@ data class CustomerSaveDTO(
     val source: String = "",
     val createdById: Long? = null,
     val followStatus: String? = null,
-    val remark:String? = null, val brandId: Long = 0,
+    val remark:String? = null,
+    val brandId: Long = 0,
 )

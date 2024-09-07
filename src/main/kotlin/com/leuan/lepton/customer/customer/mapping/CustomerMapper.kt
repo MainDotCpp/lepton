@@ -27,6 +27,7 @@ abstract class CustomerMapper {
     @Mapping(source = "channelId", target = "channel")
     @Mapping(source = "saleId", target = "sale")
     @Mapping(source = "brandId", target = "brand")
+    @Mapping(source = "createdById", target = "createdBy")
     @InheritConfiguration
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     abstract fun partialUpdate(saveDTO: CustomerSaveDTO, @MappingTarget customer: Customer): Customer

@@ -15,6 +15,7 @@ import com.leuan.lepton.framework.common.utils.ChatBotUtils
 import com.leuan.lepton.framework.common.utils.buildExpressions
 import com.leuan.lepton.framework.config.service.ConfigService
 import com.leuan.lepton.framework.dict.dal.QDictItem
+import com.leuan.lepton.framework.user.dal.QUser
 import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -95,7 +96,23 @@ class CustomerService {
     fun page(queryDTO: CustomerQueryDTO): PageDTO<CustomerVO> {
         val pageDTO = PageDTO<CustomerVO>(queryDTO)
         val query = jpaQueryFactory
-            .selectFrom(qCustomer)
+            .select(Projections.fields(
+                CustomerVO::class.java,
+                qCustomer.id,
+                qCustomer.name,
+                qCustomer.phone,
+                qCustomer.wechat,
+                qCustomer.channel.id.`as`(CustomerVO::channelId.name),
+                qCustomer.photoType,
+                qCustomer.sale.id.`as`(CustomerVO::saleId.name),
+                qCustomer.source,
+                qCustomer.createdAt,
+                qCustomer.createdBy.id.`as`(CustomerVO::createdById.name),
+                qCustomer.followStatus,
+                qCustomer.remark,
+                qCustomer.brand.id.`as`(CustomerVO::brandId.name),
+            ))
+            .from(qCustomer)
             .buildExpressions(queryDTO) {
                 customWhere(queryDTO)
             }
@@ -104,7 +121,7 @@ class CustomerService {
         pageDTO.total =
             jpaQueryFactory.select(qCustomer.id.count()).from(qCustomer).buildExpressions(queryDTO, sort = false)
                 .fetchOne()!!
-        pageDTO.data = query.fetch().map(customerMapper::toVO)
+        pageDTO.data = query.fetch()
         return pageDTO
     }
 
