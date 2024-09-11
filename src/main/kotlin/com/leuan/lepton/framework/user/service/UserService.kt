@@ -4,10 +4,10 @@ import com.leuan.lepton.framework.common.constants.BizErrEnum
 import com.leuan.lepton.framework.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
+import com.leuan.lepton.framework.common.log.logDebug
 import com.leuan.lepton.framework.common.log.logInfo
 import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.common.utils.cache
-import com.leuan.lepton.framework.common.utils.toJson
 import com.leuan.lepton.framework.dept.dal.QDept
 import com.leuan.lepton.framework.tenant.dal.Tenant
 import com.leuan.lepton.framework.user.controller.dto.UserQueryDTO
@@ -15,7 +15,10 @@ import com.leuan.lepton.framework.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.framework.user.controller.vo.UserInfoVO
 import com.leuan.lepton.framework.user.controller.vo.UserOptionsVO
 import com.leuan.lepton.framework.user.controller.vo.UserVO
-import com.leuan.lepton.framework.user.dal.*
+import com.leuan.lepton.framework.user.dal.QSysUserTenant
+import com.leuan.lepton.framework.user.dal.QUser
+import com.leuan.lepton.framework.user.dal.User
+import com.leuan.lepton.framework.user.dal.UserRepository
 import com.leuan.lepton.framework.user.enums.DataPermissionType
 import com.leuan.lepton.framework.user.mapping.UserMapper
 import com.querydsl.core.types.Projections
@@ -172,6 +175,8 @@ class UserService {
             .where(QSysUserTenant.sysUserTenant.tenant.id.eq(getThreadContext().tenantId))
             .execute()
 
+        // 刷新缓存
+        this.getUserInfo(entity.id, true, tenantId = getThreadContext().tenantId)
 
         // 更新角色
         return userMapper.toVO(entity)
@@ -204,12 +209,16 @@ class UserService {
      * @param [freshCache] 新鲜缓存
      * @return [UserInfoVO]
      */
-    fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
+    fun getUserInfo(
+        id: Long? = getThreadContext().userId,
+        freshCache: Boolean = false,
+        tenantId: Long = 0
+    ): UserInfoVO =
         cache(
-            "$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}",
+            "$SESSION_CACHE_PREFIX:$tenantId:${id}",
             fresh = freshCache,
             ttl = 3600L * 24 * 3,
-            enable = getThreadContext().tenantId != 0L
+            enable = tenantId != 0L
         ) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
             val user = jpaQueryFactory
@@ -217,14 +226,19 @@ class UserService {
                 .leftJoin(QUser.user.roles).fetchJoin()
                 .where(QUser.user.id.eq(id))
                 .fetchOne() ?: throw BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND)
-            logInfo("获取用户信息：${user.roles.joinToString(",") { it.code }}")
             val userInfo = userMapper.toDto(user)
+            userInfo.roles = user.roles.filter { role -> role.tenantId == tenantId }.map { it.code }.toMutableSet()
+            userInfo.permissions =
+                user.roles.filter { role -> role.tenantId == tenantId }.flatMap { it.menus }.map { it.permission }
+                    .toMutableSet()
+            logDebug("用户角色: ${userInfo.roles}")
+            logDebug("用户权限: ${userInfo.permissions}")
 
             // 获取数据权限
             val userTenant = jpaQueryFactory.select(QSysUserTenant.sysUserTenant)
                 .from(QSysUserTenant.sysUserTenant)
                 .where(QSysUserTenant.sysUserTenant.user.id.eq(id))
-                .where(QSysUserTenant.sysUserTenant.tenant.id.eq(getThreadContext().tenantId))
+                .where(QSysUserTenant.sysUserTenant.tenant.id.eq(tenantId))
                 .fetchOne()
 
             userInfo.dataPermission = userTenant?.dataPermission ?: DataPermissionType.SELF

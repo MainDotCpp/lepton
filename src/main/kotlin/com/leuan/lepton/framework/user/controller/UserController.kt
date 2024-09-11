@@ -1,5 +1,6 @@
 package com.leuan.lepton.framework.user.controller
 
+import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.framework.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.framework.user.service.UserService
@@ -49,7 +50,7 @@ class UserController {
 
     @GetMapping("userInfo")
     @Operation(summary = "获取用户信息")
-    fun userInfo() = userService.getUserInfo()
+    fun userInfo() = userService.getUserInfo(tenantId = getThreadContext().tenantId)
 
     @GetMapping("userOptions")
     @Operation(summary = "获取用户选项")

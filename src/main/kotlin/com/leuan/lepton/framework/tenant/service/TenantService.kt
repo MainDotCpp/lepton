@@ -10,8 +10,10 @@ import com.leuan.lepton.framework.common.utils.buildExpressions
 import com.leuan.lepton.framework.common.utils.toJson
 import com.leuan.lepton.framework.role.dal.QRole
 import com.leuan.lepton.framework.role.dal.Role
+import com.leuan.lepton.framework.role.dal.RoleRepository
 import com.leuan.lepton.framework.role.service.RoleService
 import com.leuan.lepton.framework.syspackage.dal.QSysPackage
+import com.leuan.lepton.framework.syspackage.dal.SysPackage
 import com.leuan.lepton.framework.syspackage.dal.SysPackageRepository
 import com.leuan.lepton.framework.tenant.controller.dto.TenantQueryDTO
 import com.leuan.lepton.framework.tenant.controller.dto.TenantSaveDTO
@@ -24,6 +26,7 @@ import com.leuan.lepton.framework.user.dal.QUser
 import com.leuan.lepton.framework.user.service.UserService
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -35,6 +38,9 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Service
 class TenantService(private val sysPackageRepository: SysPackageRepository) {
+
+    @Autowired
+    private lateinit var roleRepository: RoleRepository
 
     @Resource
     private lateinit var tenantMapper: TenantMapper
@@ -124,7 +130,7 @@ class TenantService(private val sysPackageRepository: SysPackageRepository) {
             val sysPackage = jpaQueryFactory.selectFrom(QSysPackage.sysPackage)
                 .where(QSysPackage.sysPackage.id.eq(entity.sysPackage!!.id))
                 .fetchOne() ?: throw BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND)
-            val menus = sysPackage!!.menus.map { it }.toMutableSet()
+            val menus = sysPackage.menus.map { it }.toMutableSet()
             logInfo("更新租户下所有用户的菜单权限:${menus.map { it.permission }}")
 
             // 更新租户下所有用户的菜单权限
@@ -166,7 +172,7 @@ class TenantService(private val sysPackageRepository: SysPackageRepository) {
             createdUser.tenants.add(entity)
             userService.save(createdUser)
             logInfo("刷新用户缓存")
-            userService.getUserInfo(freshCache = true)
+            userService.getUserInfo(freshCache = true, tenantId = entity.id!!)
             createdUser
         }
 
@@ -197,4 +203,31 @@ class TenantService(private val sysPackageRepository: SysPackageRepository) {
         return@ignoreTenantId true
     }
 
+    fun findByPackageId(id: Long): MutableIterable<Tenant> {
+        return tenantRepository.findAll(qTenant.sysPackage.id.eq(id))
+    }
+
+
+    /**
+     * 更新当前套餐关联的租户管理员权限
+     * @param [sysPackageId]
+     */
+    fun updateAdminPermissionByPackageId(sysPackageId: Long) {
+        logInfo("更新当前套餐关联的租户管理员权限 packageId: $sysPackageId")
+        val sysPackage = sysPackageRepository.findOne(QSysPackage.sysPackage.id.eq(sysPackageId))
+            .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
+        val tenants = this.findByPackageId(sysPackageId)
+        logInfo("当前套餐的租户: tenantIds: ${tenants.map { it.id }}")
+        tenants.forEach { tenant ->
+            val role = roleRepository.findOne(QRole.role.code.eq("admin").and(QRole.role.tenantId.eq(tenant.id)))
+                .orElseThrow { BizErr(BizErrEnum.ROLE_NOT_FOUND) }
+            role.menus = sysPackage.menus.map { it }.toMutableSet()
+            roleRepository.save(role)
+
+            role.users.forEach { user ->
+                logInfo("刷新用户信息缓存 userId: ${user.id},username: ${user.name}")
+                userService.getUserInfo(user.id, freshCache = true, tenantId = tenant.id!!)
+            }
+        }
+    }
 }

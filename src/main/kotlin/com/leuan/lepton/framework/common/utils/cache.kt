@@ -23,10 +23,12 @@ inline fun <R : Any, reified T> R.cache(
         }
     }
     val result = process()
-    result.toJson().also {
-        bucket.set(it)
-        ttl?.let { bucket.expire(Duration.ofSeconds(ttl)) }
-        logInfo("[Cache] SET $key -> $it")
+    if (enable) {
+        result.toJson().also {
+            bucket.set(it)
+            ttl?.let { bucket.expire(Duration.ofSeconds(ttl)) }
+            logInfo("[Cache] SET $key -> $it")
+        }
     }
     return result
 }

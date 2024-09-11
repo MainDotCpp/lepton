@@ -8,6 +8,7 @@ import com.leuan.lepton.framework.common.constants.BizErrEnum
 import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
 import com.leuan.lepton.framework.common.log.logInfo
+import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.common.utils.toJson
 import com.leuan.lepton.framework.menu.controller.dto.MenuQueryDTO
 import com.leuan.lepton.framework.menu.controller.dto.MenuSaveDTO
@@ -124,9 +125,12 @@ class MenuService {
     }
 
     fun getMenuTree(): MutableList<Tree<Long>>? {
-        val userInfo = userService.getUserInfo()
+        val userInfo = userService.getUserInfo(tenantId = getThreadContext().tenantId)
         val menus = jpaQueryFactory.selectFrom(QMenu.menu)
-            .where(QMenu.menu.hidden.eq(false), QMenu.menu.permission.`in`(userInfo.permissions))
+            .where(
+                QMenu.menu.hidden.eq(false),
+                if (userInfo.roles.contains("super_admin")) null else QMenu.menu.permission.`in`(userInfo.permissions)
+            )
             .orderBy(QMenu.menu.id.asc())
             .fetch()
         return getMenuTree(menus)

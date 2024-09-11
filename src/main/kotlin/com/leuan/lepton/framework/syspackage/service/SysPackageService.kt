@@ -3,8 +3,12 @@ package com.leuan.lepton.framework.syspackage.service
 import com.leuan.lepton.framework.common.constants.BizErrEnum
 import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
+import com.leuan.lepton.framework.common.log.logInfo
 import com.leuan.lepton.framework.common.utils.buildExpressions
 import com.leuan.lepton.framework.menu.service.MenuService
+import com.leuan.lepton.framework.role.dal.QRole
+import com.leuan.lepton.framework.role.dal.RoleRepository
+import com.leuan.lepton.framework.role.service.RoleService
 import com.leuan.lepton.framework.syspackage.controller.dto.SysPackageQueryDTO
 import com.leuan.lepton.framework.syspackage.controller.dto.SysPackageSaveDTO
 import com.leuan.lepton.framework.syspackage.controller.vo.SysPackageVO
@@ -12,8 +16,13 @@ import com.leuan.lepton.framework.syspackage.dal.QSysPackage
 import com.leuan.lepton.framework.syspackage.dal.SysPackage
 import com.leuan.lepton.framework.syspackage.dal.SysPackageRepository
 import com.leuan.lepton.framework.syspackage.mapping.SysPackageMapper
+import com.leuan.lepton.framework.tenant.dal.TenantRepository
+import com.leuan.lepton.framework.tenant.service.TenantService
+import com.leuan.lepton.framework.user.dal.UserRepository
+import com.leuan.lepton.framework.user.service.UserService
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.annotation.Resource
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 /**
@@ -24,6 +33,24 @@ import org.springframework.stereotype.Service
  */
 @Service
 class SysPackageService {
+
+    @Autowired
+    private lateinit var userService: UserService
+
+    @Autowired
+    private lateinit var tenantRepository: TenantRepository
+
+    @Autowired
+    private lateinit var tenantService: TenantService
+
+    @Autowired
+    private lateinit var roleService: RoleService
+
+    @Autowired
+    private lateinit var roleRepository: RoleRepository
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     @Resource
     private lateinit var sysPackageMapper: SysPackageMapper
@@ -97,8 +124,12 @@ class SysPackageService {
         sysPackageSaveDTO.menuIds = menuService.findAncestorsByMenuIds(sysPackageSaveDTO.menuIds ?: mutableSetOf())
         sysPackageMapper.partialUpdate(sysPackageSaveDTO, entity)
         sysPackageRepository.save(entity)
+
+        tenantService.updateAdminPermissionByPackageId(entity.id!!)
+
         return sysPackageMapper.toVO(entity)
     }
+
 
     /**
      * 按id删除

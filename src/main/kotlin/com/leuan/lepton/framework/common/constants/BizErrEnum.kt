@@ -19,12 +19,14 @@ enum class BizErrEnum(val code: Int, val message: String) {
     USER_PHONE_EXIST(1006, "手机号已存在"),
     DICT_NOT_FOUND(1007, "字典不存在"),
     CONFIG_NOT_FOUND(1008, "配置不存在"),
-    DEPT_NOT_FOUND(1009,"部门不存在"),
+    DEPT_NOT_FOUND(1009, "部门不存在"),
+    ILLEGAL_OPERATION(1010, "非法操作,已记录本次操作并通知管理员"),
 
     // --------------------- 客资模块 ---------------------
     CUSTOMER_NOT_FOUND(3002, "客资不存在"),
     CHANNEL_NOT_FOUND(3003, "渠道不存在"),
     BRAND_NOT_FOUND(3004, "品牌不存在"),
+
     // --------------------- 订单模块 ---------------------
     ORDER_NOT_FOUND(4001, "订单不存在"),
     GOODS_NOT_FOUND(4002, "商品不存在"),

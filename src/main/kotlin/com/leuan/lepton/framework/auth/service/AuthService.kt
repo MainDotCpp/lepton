@@ -79,7 +79,7 @@ class AuthService {
 
         // 获取用户信息
         setThreadContext(ThreadContext(userId = user.id, username = user.name, token = token, tenantId = 0, dataPermission = DataPermissionType.SELF))
-        val userInfo = userService.getUserInfo(freshCache = true)
+        val userInfo = userService.getUserInfo(freshCache = true, tenantId = getThreadContext().tenantId)
         return userInfo
     }
 
@@ -90,5 +90,9 @@ class AuthService {
         return true
     }
 
-    fun flushSession(userId: Long = getThreadContext().userId!!) = userService.getUserInfo(userId, true)
+    fun flushSession(userId: Long = getThreadContext().userId!!) = userService.getUserInfo(
+        userId,
+        true,
+        getThreadContext().tenantId
+    )
 }

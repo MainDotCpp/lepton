@@ -65,7 +65,8 @@ lepton:
     - /v3/api-docs
     - /auth/login
   ignore-tenant-url:
-    - /user/userInfo
-    - /tenant/save
+    - /user/userInfo # 用户可能没有任何租户, 所以不校验租户信息, 在代码中会根据用户是否有租户信息来判断是否需要校验租户信息
+    - /tenant/save # 租户保存时不需要校验租户信息
+    - /sysPackage/save # 系统套餐保存时需要更新租户信息,所以不需要校验租户信息
   auth:
     token-expire-days: 3

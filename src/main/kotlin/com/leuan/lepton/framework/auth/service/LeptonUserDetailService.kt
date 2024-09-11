@@ -1,5 +1,6 @@
 package com.leuan.lepton.framework.auth.service
 
+import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.user.service.UserService
 import jakarta.annotation.Resource
 import org.springframework.security.core.userdetails.UserDetails
@@ -15,6 +16,6 @@ class LeptonUserDetailService : UserDetailsService {
         if (username == null) {
             throw IllegalArgumentException("用户名不能为空")
         }
-        return userService.getUserInfo(username.toLong())
+        return userService.getUserInfo(username.toLong(), tenantId = getThreadContext().tenantId)
     }
 }
