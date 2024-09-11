@@ -11,6 +11,7 @@ import com.leuan.lepton.framework.common.thread.clearThreadContext
 import com.leuan.lepton.framework.common.thread.setThreadContext
 import com.leuan.lepton.framework.common.utils.redissonClient
 import com.leuan.lepton.framework.user.controller.vo.UserInfoVO
+import com.leuan.lepton.framework.user.enums.DataPermissionType
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -59,14 +60,16 @@ class SecurityJwtFilter(
             userId = userId.toLong(),
             username = "",
             token = token,
-            tenantId = request.getHeader("tenant-id")?.toLong() ?: 0L
+            tenantId = request.getHeader("tenant-id")?.toLong() ?: 0L,
+            dataPermission = DataPermissionType.SELF
         )
         setThreadContext(context)
 
         // 获取用户信息
         val userInfo = leptonUserDetailService.loadUserByUsername(userId) as UserInfoVO
         context.username = userInfo.username
-
+        context.dataPermission = userInfo.dataPermission ?: DataPermissionType.SELF
+        context.deptCode = userInfo.deptCode ?: "-"
 
         // 判断是否忽略租户id
         context.ignoreTenantId =

@@ -4,17 +4,19 @@ import com.leuan.lepton.framework.common.constants.BizErrEnum
 import com.leuan.lepton.framework.common.constants.SESSION_CACHE_PREFIX
 import com.leuan.lepton.framework.common.exception.BizErr
 import com.leuan.lepton.framework.common.http.PageDTO
+import com.leuan.lepton.framework.common.log.logInfo
 import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.common.utils.cache
+import com.leuan.lepton.framework.common.utils.toJson
+import com.leuan.lepton.framework.dept.dal.QDept
 import com.leuan.lepton.framework.tenant.dal.Tenant
 import com.leuan.lepton.framework.user.controller.dto.UserQueryDTO
 import com.leuan.lepton.framework.user.controller.dto.UserSaveDTO
 import com.leuan.lepton.framework.user.controller.vo.UserInfoVO
 import com.leuan.lepton.framework.user.controller.vo.UserOptionsVO
 import com.leuan.lepton.framework.user.controller.vo.UserVO
-import com.leuan.lepton.framework.user.dal.QUser
-import com.leuan.lepton.framework.user.dal.User
-import com.leuan.lepton.framework.user.dal.UserRepository
+import com.leuan.lepton.framework.user.dal.*
+import com.leuan.lepton.framework.user.enums.DataPermissionType
 import com.leuan.lepton.framework.user.mapping.UserMapper
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -55,7 +57,13 @@ class UserService {
         val entity = userRepository
             .findOne(qUser.id.eq(id))
             .orElseThrow { BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND) }
-        return userMapper.toVO(entity)
+        val userVO = userMapper.toVO(entity)
+        userVO.dataPermission = jpaQueryFactory.select(QSysUserTenant.sysUserTenant.dataPermission)
+            .from(QSysUserTenant.sysUserTenant)
+            .where(QSysUserTenant.sysUserTenant.user.id.eq(id))
+            .where(QSysUserTenant.sysUserTenant.tenant.id.eq(getThreadContext().tenantId))
+            .fetchOne()
+        return userVO
     }
 
     /**
@@ -97,7 +105,32 @@ class UserService {
         pageDTO.total =
             jpaQueryFactory.select(qUser.id.count()).from(qUser).where(*expressions)
                 .fetchOne()!!
-        pageDTO.data = query.fetch().map(userMapper::toVO)
+
+        pageDTO.data = query.fetch().map {
+            UserVO(
+                id = it.id,
+                name = it.name,
+                phone = it.phone,
+                avatar = it.avatar,
+                roleIds = it.roles
+                    .filter { role -> role.tenantId == getThreadContext().tenantId }
+                    .map { role -> role.id }.toMutableSet(),
+                dataPermission = DataPermissionType.SELF
+            )
+        }
+
+        val datePermissions = jpaQueryFactory.selectFrom(QSysUserTenant.sysUserTenant)
+            .where(
+                QSysUserTenant.sysUserTenant.user.id.`in`(pageDTO.data.map { it.id }),
+                QSysUserTenant.sysUserTenant.tenant.id.eq(getThreadContext().tenantId)
+            ).fetch()
+
+        pageDTO.data.forEach { user ->
+            datePermissions.find { it.id!!.userId == user.id }?.let {
+                user.dataPermission = it.dataPermission
+                user.deptId = it.deptId
+            }
+        }
         return pageDTO
     }
 
@@ -130,6 +163,15 @@ class UserService {
         // 添加租户
         if (entity.tenants.none { it.id == getThreadContext().tenantId })
             entity.tenants.add(Tenant().apply { id = getThreadContext().tenantId })
+
+        // 更新数据权限
+        jpaQueryFactory.update(QSysUserTenant.sysUserTenant)
+            .set(QSysUserTenant.sysUserTenant.dataPermission, userSaveDTO.dataPermission)
+            .set(QSysUserTenant.sysUserTenant.deptId, userSaveDTO.deptId)
+            .where(QSysUserTenant.sysUserTenant.user.id.eq(entity.id))
+            .where(QSysUserTenant.sysUserTenant.tenant.id.eq(getThreadContext().tenantId))
+            .execute()
+
 
         // 更新角色
         return userMapper.toVO(entity)
@@ -165,8 +207,27 @@ class UserService {
     fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
         cache("$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}", fresh = freshCache) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
-            val user = userRepository.findOne(qUser.id.eq(id)).orElseThrow { BizErr(BizErrEnum.USER_NOT_FOUND) }
+            val user = jpaQueryFactory
+                .selectFrom(QUser.user)
+                .leftJoin(QUser.user.roles).fetchJoin()
+                .where(QUser.user.id.eq(id))
+                .fetchOne() ?: throw BizErr(BizErrEnum.SYS_PACKAGE_NOT_FOUND)
+            logInfo("获取用户信息：${user.roles.joinToString(",") { it.code }}")
             val userInfo = userMapper.toDto(user)
+
+            // 获取数据权限
+            val userTenant = jpaQueryFactory.select(QSysUserTenant.sysUserTenant)
+                .from(QSysUserTenant.sysUserTenant)
+                .where(QSysUserTenant.sysUserTenant.user.id.eq(id))
+                .where(QSysUserTenant.sysUserTenant.tenant.id.eq(getThreadContext().tenantId))
+                .fetchOne()
+
+            userInfo.dataPermission = userTenant?.dataPermission ?: DataPermissionType.SELF
+            // 获取部门信息
+            userInfo.deptCode = jpaQueryFactory.select(QDept.dept.code)
+                .from(QDept.dept)
+                .where(QDept.dept.id.eq(userTenant?.deptId ?: 0L))
+                .fetchOne()
             userInfo
         }
 
@@ -176,7 +237,6 @@ class UserService {
 
     fun test(): Any {
         return jpaQueryFactory
-
             .from(qUser)
             .fetch()
     }

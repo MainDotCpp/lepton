@@ -1,5 +1,6 @@
 package com.leuan.lepton.framework.user.controller.dto
 
+import com.leuan.lepton.framework.user.enums.DataPermissionType
 import lombok.NoArgsConstructor
 
 /**
@@ -12,5 +13,7 @@ data class UserSaveDTO(
     val phone: String? = null,
     var password: String? = null,
     val avatar: String = "",
-    val roleIds: MutableSet<Long> = mutableSetOf()
+    val roleIds: MutableSet<Long> = mutableSetOf(),
+    val dataPermission: DataPermissionType = DataPermissionType.SELF,
+    val deptId: Long? = null,
 )

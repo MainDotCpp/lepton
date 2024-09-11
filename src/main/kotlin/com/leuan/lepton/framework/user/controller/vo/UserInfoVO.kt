@@ -2,6 +2,8 @@ package com.leuan.lepton.framework.user.controller.vo
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.leuan.lepton.framework.common.annotations.AllOpen
+import com.leuan.lepton.framework.user.enums.DataPermissionType
+import lombok.Data
 import lombok.NoArgsConstructor
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -17,7 +19,9 @@ data class UserInfoVO(
     var roles: MutableSet<String> = mutableSetOf(),
     var permissions: MutableSet<String> = mutableSetOf(),
     var tenants: MutableSet<TenantDto> = mutableSetOf(),
-    var avatar: String?
+    var avatar: String?,
+    var deptCode: String?,
+    var dataPermission: DataPermissionType? = DataPermissionType.SELF
 ) : UserDetails {
 
     @JsonIgnore

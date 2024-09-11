@@ -13,5 +13,6 @@ class TenantEventListener {
     fun setTenant(entity: BaseAuditEntity) {
         if (getThreadContext().ignoreTenantId) return
         entity.tenantId = getThreadContext().tenantId
+        entity.permissionKey = getThreadContext().deptCode
     }
 }

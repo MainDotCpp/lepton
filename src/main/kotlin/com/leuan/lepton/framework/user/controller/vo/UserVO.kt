@@ -1,5 +1,6 @@
 package com.leuan.lepton.framework.user.controller.vo
 
+import com.leuan.lepton.framework.user.enums.DataPermissionType
 import lombok.NoArgsConstructor
 import java.io.Serializable
 
@@ -13,5 +14,7 @@ data class UserVO(
     var phone: String? = null,
     var avatar: String? = null,
     var roleIds: MutableSet<Long>?,
+    var dataPermission: DataPermissionType?,
+    var deptId: Long? = null,
 ) : Serializable {
 }

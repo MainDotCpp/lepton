@@ -33,6 +33,8 @@ class User {
     @Column(name = "avatar")
     var avatar: String? = null
 
+
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "sys_user_tenant",
@@ -48,4 +50,6 @@ class User {
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
     var roles: MutableSet<Role> = mutableSetOf()
+
+
 }

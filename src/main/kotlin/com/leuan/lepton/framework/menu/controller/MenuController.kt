@@ -50,4 +50,6 @@ class MenuController {
     @Operation(summary = "获取系统菜单树")
     @GetMapping("tree")
     fun tree() = menuService.getMenuTree()
+
+
 }

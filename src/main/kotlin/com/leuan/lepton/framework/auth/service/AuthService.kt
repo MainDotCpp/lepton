@@ -14,6 +14,7 @@ import com.leuan.lepton.framework.common.thread.ThreadContext
 import com.leuan.lepton.framework.common.thread.getThreadContext
 import com.leuan.lepton.framework.common.thread.setThreadContext
 import com.leuan.lepton.framework.user.controller.vo.UserInfoVO
+import com.leuan.lepton.framework.user.enums.DataPermissionType
 import com.leuan.lepton.framework.user.service.UserService
 import jakarta.annotation.Resource
 import jakarta.servlet.http.Cookie
@@ -77,7 +78,7 @@ class AuthService {
         }
 
         // 获取用户信息
-        setThreadContext(ThreadContext(userId = user.id, username = user.name, token = token, tenantId = 0))
+        setThreadContext(ThreadContext(userId = user.id, username = user.name, token = token, tenantId = 0, dataPermission = DataPermissionType.SELF))
         val userInfo = userService.getUserInfo(freshCache = true)
         return userInfo
     }

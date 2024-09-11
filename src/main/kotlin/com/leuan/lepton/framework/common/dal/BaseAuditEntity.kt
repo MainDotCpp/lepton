@@ -29,6 +29,11 @@ class BaseAuditEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     var createdBy: User? = null,
 
+    @Comment("权限KEY")
+    @ColumnDefault("''")
+    @Column(name = "permission_key", nullable = false)
+    var permissionKey: String = "",
+
     @Comment("创建时间")
     @CreatedDate
     @ColumnDefault("CURRENT_TIMESTAMP")
