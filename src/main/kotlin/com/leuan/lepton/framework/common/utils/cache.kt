@@ -8,7 +8,13 @@ object CacheUtils
 
 lateinit var redissonClient: RedissonClient
 
-inline fun <R : Any, reified T> R.cache(key: String, ttl: Long? = null, fresh: Boolean = false, process: () -> T): T {
+inline fun <R : Any, reified T> R.cache(
+    key: String,
+    ttl: Long? = null,
+    fresh: Boolean = false,
+    enable: Boolean = true,
+    process: () -> T
+): T {
     val bucket = redissonClient.getBucket<String>(key)
     val value = bucket.get()
     if (value != null && !fresh) {

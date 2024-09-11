@@ -205,7 +205,11 @@ class UserService {
      * @return [UserInfoVO]
      */
     fun getUserInfo(id: Long? = getThreadContext().userId, freshCache: Boolean = false): UserInfoVO =
-        cache("$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}", fresh = freshCache) {
+        cache(
+            "$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}",
+            fresh = freshCache,
+            enable = getThreadContext().tenantId != 0L
+        ) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
             val user = jpaQueryFactory
                 .selectFrom(QUser.user)
