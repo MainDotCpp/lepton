@@ -208,6 +208,7 @@ class UserService {
         cache(
             "$SESSION_CACHE_PREFIX:${getThreadContext().tenantId}:${id}",
             fresh = freshCache,
+            ttl = 3600L * 24 * 3,
             enable = getThreadContext().tenantId != 0L
         ) {
             if (id == null) throw BizErr(BizErrEnum.NOT_LOGIN)
