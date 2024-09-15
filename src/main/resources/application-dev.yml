@@ -31,3 +31,11 @@ spring:
       database: 3
       password: Leuan_3rd
 
+
+
+wechat:
+  wxopen:
+    componentAppId: wx71b82d4a51a0c0ee
+    componentSecret: 774f72de1a1d34bddfada50c8b245bfc
+    componentToken: 808b6a30-7e50-4f43-9c67-1901affb21ed
+    componentAesKey: Hfr0d3NuI0FWUyS18QvyT47ZtISjsi9nqyh2kC1nbAq

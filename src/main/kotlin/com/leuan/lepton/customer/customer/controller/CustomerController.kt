@@ -46,4 +46,11 @@ class CustomerController {
     @Operation(summary = "导出客资")
     @PreAuthorize("hasAnyAuthority('customer:customer:export')")
     fun export(queryDTO: CustomerQueryDTO) = ""
+
+    @GetMapping("validateExist")
+    @Operation(summary = "校验客资是否存在")
+    @PreAuthorize("hasAnyAuthority('customer:customer:menu')")
+    fun validateExist(phone: String?, wechat: String?) = customerService.validateExist(phone, wechat)
+
+
 }

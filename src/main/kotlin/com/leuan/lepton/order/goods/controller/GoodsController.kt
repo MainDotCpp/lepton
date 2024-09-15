@@ -24,7 +24,7 @@ class GoodsController {
 
     @GetMapping("list")
     @Operation(summary = "查询商品列表")
-    @PreAuthorize("hasAnyAuthority('order:goods:menu')")
+    @PreAuthorize("hasAnyAuthority('order:goods:menu','order:order:update')")
     fun list(queryDTO: GoodsQueryDTO) = goodsService.list(queryDTO)
 
     @GetMapping("page")

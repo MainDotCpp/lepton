@@ -64,6 +64,9 @@ dependencies {
         annotations("lombok.NoArgsConstructor")
     }
 
+    // SDK
+    implementation("com.github.binarywang:weixin-java-open:4.6.5.B")
+
     // AOP
     implementation("org.springframework.boot:spring-boot-starter-aop")
 

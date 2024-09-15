@@ -96,22 +96,24 @@ class CustomerService {
     fun page(queryDTO: CustomerQueryDTO): PageDTO<CustomerVO> {
         val pageDTO = PageDTO<CustomerVO>(queryDTO)
         val query = jpaQueryFactory
-            .select(Projections.fields(
-                CustomerVO::class.java,
-                qCustomer.id,
-                qCustomer.name,
-                qCustomer.phone,
-                qCustomer.wechat,
-                qCustomer.channel.id.`as`(CustomerVO::channelId.name),
-                qCustomer.photoType,
-                qCustomer.sale.id.`as`(CustomerVO::saleId.name),
-                qCustomer.source,
-                qCustomer.createdAt,
-                qCustomer.createdBy.id.`as`(CustomerVO::createdById.name),
-                qCustomer.followStatus,
-                qCustomer.remark,
-                qCustomer.brand.id.`as`(CustomerVO::brandId.name),
-            ))
+            .select(
+                Projections.fields(
+                    CustomerVO::class.java,
+                    qCustomer.id,
+                    qCustomer.name,
+                    qCustomer.phone,
+                    qCustomer.wechat,
+                    qCustomer.channel.id.`as`(CustomerVO::channelId.name),
+                    qCustomer.photoType,
+                    qCustomer.sale.id.`as`(CustomerVO::saleId.name),
+                    qCustomer.source,
+                    qCustomer.createdAt,
+                    qCustomer.createdBy.id.`as`(CustomerVO::createdById.name),
+                    qCustomer.followStatus,
+                    qCustomer.remark,
+                    qCustomer.brand.id.`as`(CustomerVO::brandId.name),
+                )
+            )
             .from(qCustomer)
             .buildExpressions(queryDTO) {
                 customWhere(queryDTO)
@@ -209,6 +211,13 @@ class CustomerService {
     fun deleteById(id: Long): Boolean {
         customerRepository.deleteById(id)
         return true
+    }
+
+    fun validateExist(phone: String?, wechat: String?): Any {
+        val query = jpaQueryFactory.select(qCustomer.id)
+            .from(qCustomer)
+            .where(qCustomer.phone.eq(phone).or(qCustomer.wechat.eq(wechat)))
+        return query.fetchOne() != null
     }
 
 }
