@@ -25,7 +25,8 @@ import javax.sql.DataSource
     basePackages = [
         "com.leuan.lepton.framework",
         "com.leuan.lepton.customer",
-        "com.leuan.lepton.order"
+        "com.leuan.lepton.order",
+        "com.leuan.lepton.form"
     ]
 )
 class MainDataSourceConfig {
@@ -49,7 +50,8 @@ class MainDataSourceConfig {
             .packages(
                 "com.leuan.lepton.framework",
                 "com.leuan.lepton.customer",
-                "com.leuan.lepton.order"
+                "com.leuan.lepton.order",
+                "com.leuan.lepton.form"
             )
             .persistenceUnit("mainUnit").build()
     }

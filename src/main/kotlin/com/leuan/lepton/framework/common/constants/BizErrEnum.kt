@@ -33,4 +33,8 @@ enum class BizErrEnum(val code: Int, val message: String) {
 
     // --------------------- 收集器模块 ---------------------
     XHS_NOTE_COMMENT_NOT_FOUND(5001, "小红书评论不存在"),
+
+    // --------------------- 表单模块 ---------------------
+    PAGE_NOT_FOUND(6001, "页面不存在"),
+    COMPONENT_NOT_FOUND(6002, "组件不存在"),
 }

@@ -18,6 +18,11 @@ const moduleMapping = {
         name: 'collector',
         package: 'com.leuan.lepton.collector',
         menuId: 138
+    },
+    form:{
+        name: 'form',
+        package: 'com.leuan.lepton.form',
+        menuId: 176
     }
 }
 export default function Plopfile(plop) {
@@ -49,7 +54,6 @@ export default function Plopfile(plop) {
                         type: 'addMany',
                         base: '_templates/service',
                         destination: 'src/main/kotlin/com/leuan/lepton/{{lowerCase moduleName}}',
-                        force: true,
                         templateFiles: '_templates/service',
                         data: {
                             basePackage: 'com.leuan.lepton',

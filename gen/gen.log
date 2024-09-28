@@ -50,3 +50,5 @@ plop customer brand 品牌
 plop collector xhsNodeComment 小红书评论
 plop collector xhsNoteComment 小红书评论
 plop system dept 部门
+plop from page 页面
+plop from component 表单组件
